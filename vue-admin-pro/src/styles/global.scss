@@ -1,0 +1,9 @@
+@import './variables.scss';
+
+.admin-pro-layout {
+  display: flex;
+  min-height: 100vh;
+}
+.admin-pro-content {
+  flex-grow: 1;
+}
