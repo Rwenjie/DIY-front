@@ -106,6 +106,15 @@
                     },
                     {
                         action: "ab-testing",
+                        title: "我的关注",
+                        path:"/cart",
+                        items: [
+                            { title: "购物车", path: "/listing" },
+                            { title: "关注的用户", path: "/user" },
+                        ]
+                    },
+                    {
+                        action: "ab-testing",
                         title: "商品",
                         path:"/items",
                         items: [

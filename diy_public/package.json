@@ -16,7 +16,7 @@
     "area-linkage-vue": "^5.1.2",
     "axios": "^0.21.1",
     "core-js": "^2.6.5",
-    "element-ui": "^2.4.5",
+    "element-ui": "^2.13.2",
     "jquery": "^3.6.0",
     "qs": "latest",
     "swiper": "^6.6.1",

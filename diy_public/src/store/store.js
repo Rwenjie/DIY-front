@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import cart from "./modules/cart"
 import createGood from "./modules/createGood"
+import category from "./modules/category";
 
 import { userInfo,} from "network/login";
 
@@ -60,9 +61,10 @@ const store = new Vuex.Store({
   },
   modules: {
     cart,
-    createGood
+    createGood,
+    category
   }
-})
+});
 
 //导出store
 export default store

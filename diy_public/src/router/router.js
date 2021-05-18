@@ -9,9 +9,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 const Home = () => import('../views/home/Home');
-const Cart = () => import('../views/cart/Cart');
 const Profile =() => import('../views/profile/Profile');
 const Orders = () => import('../views/order/Orders');
+const Cart = () => import('../views/cart/Cart');
 const Article = () => import('../views/article/Article')
 
 const ChangePwd = () => import('../views/profile/info/ChangePwd');
@@ -101,6 +101,11 @@ const routes = [
                 path: 'follow/user',
                 name:'FollowUsers',
                 component: FollowUsers
+            },
+            {
+                path: 'cart/listing',
+                name:'CartList',
+                component: Cart
             },
 
         ]

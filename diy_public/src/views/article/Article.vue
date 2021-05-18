@@ -143,7 +143,8 @@
                                     width="100%"
                                     style="padding: 5px 0 10px 5px">
                                 <el-row style="padding: 50px">
-                                    <review :dataList="dataList"></review>
+                                    <!--<review :dataList="dataList"></review>-->
+                                    <!--<r-comment :articleId="cb6e6cad-bb02-46f6-8640-055473d451d9"></r-comment>-->
                                 </el-row>
                             </v-sheet>
                         </div>
@@ -158,7 +159,6 @@
                     <popular-posts :popular-posts="PopularPosts"> </popular-posts>
                 </el-card>
 
-
             </el-main>
         </el-container>
     </div>
@@ -171,7 +171,8 @@
     import PopularPosts from "./childComps/PopularPosts";
     import Review from "components/content/review/Review";
     import CategoryNav from "components/content/categoryNav/CategoryNav";
-    import dataList from './data.json'
+  /*  import RComment from "components/common/comment/comment.vue"*/
+    import goodsItem from './data'
 
     export default {
         name: "Article",
@@ -183,7 +184,8 @@
             GoodsDetail,
             Review,
             PopularPosts,
-            CategoryNav
+            CategoryNav,
+          /*  RComment*/
         },
         data(){
             return{
@@ -261,161 +263,12 @@
                         title: "SPRING WREATH",
                         date: "2020/02/04"
                     },
-
-
                 ],
-                dataList,
                 starStatus: true,
                 star: 199,
                 tags: ["halloween","hand","pumpkin","skeleton","hand","pumpkin","skeleton"],
                 categories:["With hands and feet", "paper toys", "halloween", "educational activities", "back to school"],
-                goods: {
-                    title: "diy小屋手工微景观小房子咖啡屋花房拼装店铺摆件礼物女微缩模型",
-                    payMethod: [
-                        {
-                            id: 1,
-                            label:  "支付宝",
-                        },
-                        {
-                            id: 2,
-                            label:  "微信支付",
-                        },
-                    ],
-                    spec: [
-                        {
-                            label: "尺码",
-                            isImage: false,
-                            option: [
-                                {
-                                    id: 1,
-                                    alt: "36",
-                                    arc: "",
-                                    disabled: false
-                                },
-                                {
-                                    id: 2,
-                                    alt: "38",
-                                    arc: "",
-                                    disabled: true
-                                },
-                                {
-                                    id: 3,
-                                    alt: "40",
-                                    arc: "",
-                                    disabled: false
-                                },
-                                {
-                                    id: 4,
-                                    alt: "42",
-                                    arc: "",
-                                    disabled: false
-                                },
-                                {
-                                    id: 5,
-                                    alt: "44",
-                                    arc: "",
-                                    disabled: true
-                                },
-                                {
-                                    id: 6,
-                                    alt: "42",
-                                    arc: "",
-                                    disabled: false
-                                },
-                                {
-                                    id: 7,
-                                    alt: "44",
-                                    arc: "",
-                                    disabled: true
-                                },
-                            ]
-                        },
-                        {
-                            label: "颜色分类",
-                            isImage: true,
-                            option: [
-                                {
-                                    id: '1',
-                                    src: 'https://unsplash.it/200?random',
-                                    alt: 'Alt Image 1',
-                                    disabled: true
-                                },
-                                {
-                                    id: '2',
-                                    src: 'https://unsplash.it/200?random',
-                                    alt: 'Alt Image 2',
-                                    disabled: false
-                                },
-                                {
-                                    id: '3',
-                                    src: 'https://unsplash.it/200?random',
-                                    alt: 'Alt Image 2',
-                                    disabled: true
-                                },
-                                {
-                                    id: '4',
-                                    src: 'https://unsplash.it/200?random',
-                                    alt: 'Alt Image 2',
-                                    disabled: false
-                                },
-                               /* {
-                                    id: "5",
-                                    alt: "黑色",
-                                    arc:  'https://unsplash.it/200?random',
-                                    disabled: true
-                                },
-                                {
-                                    id: "6",
-                                    alt: "黑色升级版",
-                                    arc: 'https://unsplash.it/200?random',
-                                    disabled: true
-                                },
-                                {
-                                    id: "7",
-                                    alt: "湖蓝",
-                                    disabled: false,
-                                    arc: 'https://unsplash.it/200?random',
-                                },
-                                {
-                                    id: "8",
-                                    alt: "湖蓝升级版",
-                                    disabled: true,
-                                    arc: 'https://unsplash.it/200?random',
-                                },
-                                {
-                                    id: "9",
-                                    alt: "黄色",
-                                    disabled: false,
-                                    arc: 'https://unsplash.it/200?random',
-                                },
-                                {
-                                    id: "10",
-                                    alt: "黄色升级版",
-                                    disabled: false,
-                                    arc: 'http://image5.suning.cn/uimg/b2c/newcatentries/0070130691-000000000826244625_5_800x800.jpg',
-                                },*/
-                            ]
-                        },
-                    ],
-                    skus: [
-                        {
-                            title: "红色",
-                            image: "http://image5.suning.cn/uimg/b2c/newcatentries/0070130691-000000000826244625_5_800x800.jpg",
-                            price: 2557.89,
-                            stock: 345,
-                            ownSpec: {
-
-                            }
-                        },
-                        {
-                            title: "红色",
-                            image: "http://image5.suning.cn/uimg/b2c/newcatentries/0070130691-000000000826244625_5_800x800.jpg",
-                            price: 3000.89,
-                            stock: 123,
-                        }
-
-                    ]
-                }
+                goods: [],
             }
         },
         methods: {
@@ -426,9 +279,17 @@
             giveLike() {
                 this.starStatus = true;
                 this.star+=1;
+            },
+            addToCart() {
+                this.$store.dispatch('addCart', {
+
+                }).then(res => {
+                    console.log(res);
+                })
             }
         },
         mounted() {
+            this.goods = goodsItem
             console.log(this.dataList);
         }
     }

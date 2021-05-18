@@ -8,41 +8,50 @@
 
 <template>
     <div id="category-nav" style="text-align: center">
-        <div class="line"></div>
-        <el-menu :default-active="activeIndex" class="el-menu-demo" style="width: auto; text-align: center" mode="horizontal" @select="handleSelect">
-            <el-menu-item index="1">处理中心</el-menu-item>
-            <el-submenu index="2">
-                <template slot="title">我的工作台</template>
-                <el-menu-item index="2-1">选项1</el-menu-item>
-                <el-menu-item index="2-2">选项2</el-menu-item>
-                <el-menu-item index="2-3">选项3</el-menu-item>
-                <el-submenu index="2-4">
-                    <template slot="title">选项4</template>
-                    <el-menu-item index="2-4-1">选项1</el-menu-item>
-                    <el-menu-item index="2-4-2">选项2</el-menu-item>
-                    <el-menu-item index="2-4-3">选项3</el-menu-item>
-                </el-submenu>
-            </el-submenu>
-            <el-menu-item index="3" disabled>消息中心</el-menu-item>
-            <el-menu-item index="4"><a href="https://www.ele.me" target="_blank">订单管理</a></el-menu-item>
-        </el-menu>
-        <div class="line"></div>
+        <div class="line"/>
+        <div class="category-menu">
+            <el-menu :default-active="activeIndex"
+                     class="el-menu-demo"
+                     style="width: auto; text-align: center"
+                     mode="horizontal"
+                     @select="handleSelect">
+                <sub-menu v-for="(menu, id) in categories" :menu="menu" :key="id"/>
+            </el-menu>
+        </div>
+
+        <div class="line"/>
+
     </div>
 </template>
 
 <script>
+
+    import SubMenu from "./Submenu";
+    import {mapGetters} from 'vuex'
+
     export default {
         name: "CategoryNav",
+        components: {
+            SubMenu
+        },
+        computed:{
+           ...mapGetters({
+               categories: 'categories'
+           })
+        },
         data() {
             return {
+                menuHtml: '',
                 activeIndex: '1',
-                activeIndex2: '1'
+                activeIndex2: '1',
             };
         },
         methods: {
             handleSelect(key, keyPath) {
                 console.log(key, keyPath);
-            }
+            },
+        },
+        mounted() {
         }
 
     }
@@ -50,4 +59,14 @@
 
 <style scoped>
 
+    #category-nav {
+        width: 100%;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04)
+    }
+    .category-menu {
+        width: 90%;
+        background-color:  #F5F8FA;
+        margin: 0px auto;
+    }
 </style>

@@ -19,13 +19,13 @@
                 <v-btn icon color="red" @click="giveLike">
                     <v-icon>mdi-heart-outline</v-icon>
                 </v-btn>
-                <span>199人收藏</span>
+                <span>{{goodsItem.star}}人收藏</span>
             </span>
             <span style="float: right">
                 <v-btn icon>
                     <v-icon>mdi-basket-fill</v-icon>
                 </v-btn>
-                3444人已购买
+                {{goodsItem.purchased}}人已购买
             </span>
         </div>
         <h3><p>{{goodsItem.title}}</p></h3>
@@ -33,9 +33,8 @@
             <ul class="promo-meta">
                 <li class="detail-price">
                     <span class="property-type" style="">价格</span>
-                    <span class="property-cont" style=""><em class="r-rmb">￥</em>{{sku.price}}</span>
+                    <span class="property-cont" style=""><em class="r-rmb">￥</em>{{selItem.sku.unitPrice}}</span>
                 </li>
-
             </ul>
             <div v-for="(spce, id) in goodsItem.spec"
                  :key="id"
@@ -48,34 +47,23 @@
                                             color: #6c6c6c;">
                     {{spce.label}}
                 </div>
-                <div class="" style="width: 300px; float: right">
-                    <div style="float: right;">
+                <div class="" style="width: 360px; float: right">
+                    <div style="float: left;" @click="changeIsAble(id)">
                         <div v-if="spce.isImage" style="margin-top: 15px">
-                            <vue-select-image
-                                    :dataImages="spce.option"
-                                    :w="35"
-                                    :h="35"
-                                    @onselectimage="onSelectImage">
-                            </vue-select-image>
-                            <!--<el-radio-group v-model="radio3" size="small">
-                                <el-radio v-for="(radio, id) in spce.option"
-                                          :label=radio.id
-                                          :disabled=radio.disabled
-                                          :key="id"
-                                          border
-                                            style="height: 30px">
-                                    <el-avatar shape="square" :size="25" :fit="fit" :src="radio.src"></el-avatar>
-                                </el-radio>
-                            </el-radio-group>-->
+                            <image-select v-model="selected[id]"
+                                          :width="50"
+                                          :is-img=true
+                                          :height="50"
+                                          :data-list="spce.option"
+                                          :defaultIndex=selected[id]
+                            ></image-select>
                         </div>
                         <div v-else>
-                            <el-radio-group v-model="radio4" size="small">
-                                <el-radio v-for="(radio, id) in spce.option"
-                                          :label=radio.id
-                                          :disabled=radio.disabled
-                                          :key="id"
-                                          style="margin-top: 15px">{{radio.alt}}</el-radio>
-                            </el-radio-group>
+                            <image-select v-model="selected[id]"
+                                          :height="34"
+                                          :is-img=false
+                                          :defaultIndex=selected[id]
+                                          :data-list="spce.option"></image-select>
                         </div>
                     </div>
                 </div>
@@ -84,11 +72,11 @@
             <div style="text-align: left; padding-left: 24px">
                 <span class="property-type" style="float: left; line-height: 75px;">配送</span>
                 <div class="J_LogisticInfo" style=" float: left">
-                    <span id="J-from" style=" display: inline-block; line-height: 75px;">湖北襄阳&#12288至&#12288</span>
+                    <span id="J-from" style=" display: inline-block; line-height: 75px;">{{fromAddr.province.label}}{{fromAddr.city.label}}&#12288至&#12288</span>
                     <span id="J-to"  style="float: right; width: auto;">
                         <span>
                             <v-text-field style="width: 200px; max-width: 220px; font-size: 14px"
-                                          v-model="addressText">
+                                          v-model="toAddrText">
                                      <v-btn slot="append" icon  @click="loadAddress">
                                         <v-icon>mdi-map-marker-plus</v-icon>
                                      </v-btn>
@@ -101,14 +89,16 @@
             <div style="text-align: left; padding: 10px 0 0 24px">
                 <span class="property-type">数量</span>
                 <span class="" style="width: 300px; display:inline-block; padding-left:10px">
-                    <el-input-number v-model="number" controls-position="right" @change="handleChange" :min="1"></el-input-number>
+                    <el-input-number v-model="selItem.count" controls-position="right" @change="" :min="1" :max="stock"></el-input-number>
+                    <span>(库存{{stock}}件)</span>
                 </span>
+
             </div>
             <div style="margin-top: 20px">
                 <el-row>
                     <el-col :span="4">f</el-col>
                     <el-col :span="10"  style="text-align: center">
-                        <el-button >加入购物车</el-button>
+                        <el-button @click="addCart">加入购物车</el-button>
                     </el-col>
                     <el-col :span="10" style="text-align: center">
                         <el-button>立即购买</el-button>
@@ -136,17 +126,15 @@
         <el-dialog
                 title="选择配送地址"
                 :visible.sync="diaAddressVisible"
-                width="40%"
-                :before-close="handleClose">
+                width="40%">
             <div>
-                <area-select v-model="address" type="all" :data="$pcaa" :level="2"></area-select>
+                <area-select v-model="toAddr" value="toAddr" type="all" :data="$pcaa" :level="2"></area-select>
             </div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="diaAddressVisible = false">取 消</el-button>
-                <el-button type="primary" @click="diaAddressVisible = false">确 定</el-button>
+                <el-button type="primary" @click="addrDialogClose">确 定</el-button>
             </span>
         </el-dialog>
-
     </div>
 </template>
 
@@ -154,69 +142,233 @@
 
 
     import VueSelectImage from 'vue-select-image'
-    require('vue-select-image/dist/vue-select-image.css')
+    require('vue-select-image/dist/vue-select-image.css');
+    import goodsIt from '../data'
+    import ImageSelect from "../../../components/common/imageSelect/ImageSelect";
 
     export default {
         name: "GoodsDetail",
         components:{
-            VueSelectImage
-        },
-        props: {
-            starStatus: true,
-            goodsItem: {
-                type: Object,
-                default(){
-                    return {}
-                }
-            }
+            VueSelectImage,
+            ImageSelect
         },
         data() {
             return{
-                radio3: 1,
-                radio4: 1,
-                address:[
+                selected: [],
+                starStatus: true,
+                selItem: {
+                    id: "",  //编号
+                    count: 1,       //数量
+                    amount: 0.00,   //金额
+                    product: {
+                        id: "",
+                        title: "GoodsName",
+                        img: "https://rwenjie-blog.oss-cn-hangzhou.aliyuncs.com/diy-shop/default%20avatar.png",
+                    },
+                    sku: {
+                        id: '',
+                        unitPrice: 0.00, //单价
+                        metatit: [
+                            {
+                                label: "",
+                                value: ""
+                            }
+                        ]
+                    },
+                },
+                //sku选择中是否有图片
+                isImage: false,
+                fromAddr: {
+                    province: {
+                        label: "",
+                        code: ""
+                    },
+                    city: {
+                        label: "",
+                        code: ""
+                    }
+                },
+                toAddrText: "",
+                toAddr: [],
+                selectedList: [],
+               /* address:[
                     { "140000": "山西省" },
                     { "140100": "太原市"},
                     { "140105": "小店区"}],
-                addressText: "山西省/太原市/小店区",
-                addressCode: ["140000", "140100", "140105"],
+                addressCode: ["140000", "140100", "140105"],*/
                 diaAddressVisible: false,
-                sku: {
-                    title: "红色",
-                    image: "http://image5.suning.cn/uimg/b2c/newcatentries/0070130691-000000000826244625_5_800x800.jpg",
-                    price: 2557.89,
-                    stock: 345,
-                },
+                skus: [],
                 selectedAddress: '',
-                afterService: [
-                    "正品保证",
-                    "极速退款",
-                    "退货运费险",
-                ],
-                payMethod: [
-                    "支付宝",
-                    "微信支付",
-                    "银联支付"
-                ],
-                number: 1,
+                afterService: [],
+                payMethod: [],
+                goodsItem: {},
+                stock: 0
             }
         },
         methods: {
-            selectAddress(address) {
-                this.selectedAddress = `${address.province}${address.city}${address.detail}`
+            giveLike() {
+
+            },
+            cancelLike() {
+
             },
             loadAddress() {
                 this.diaAddressVisible = true;
+            },
+            addCart() {
+
+                this.$store.dispatch("addCart", this.selItem).then( res => {
+                    alert(res)
+                });
+
 
             },
-            increaseNum() {
-                this.number++;
+            addrDialogClose() {
+                this.diaAddressVisible = false;
+                this.modifyDataToAddr();
             },
-            decreaseNum() {
-                if (this.number>=2) {
-                    this.number--;
+            modifyDataToAddr() {
+                let i = 1;
+                this.toAddrText = '';
+                this.toAddr.forEach( (toItem) => {
+                    const addr = Object.values(toItem);
+                    this.toAddrText += addr[0];
+                    if (i++ <3) {
+                        this.toAddrText += '/'
+                    }
+                });
+            },
+
+            //sid 是选择了第 i 个规格
+            //遍历其他属性对其他属性进行修改
+            changeIsAble() {
+                this.goodsItem.spec.forEach( (spec) => {
+                    spec.option.forEach( (op) => {
+                        op.disabled = true;
+                    })
+                });
+                for (let i=0; i<this.selected.length; i++) {
+                    this.goodsItem.spec[i].option[this.selected[i]].disabled = false;
+                    this.change(i)
                 }
+                this.changeInfo();
+            },
+            change(sid) {
+                this.goodsItem.spec[sid].option[this.selected[sid]].disabled = false;
+                // console.log("现在选定的是第"+this.selected[sid]+"个选项");
+                for (let i=0; i<this.skus.length; i++) {
+                   // console.log("与skus["+i+"]个开始匹配");
+                    if (this.selected[sid] == this.skus[i].indexes[sid]) {
+                      // console.log("这个skus中有我们需要的值");
+                        for (let index = 0; index < this.skus[i].indexes.length; index++) {
+                            // console.log("开始遍历indexes数组");
+                            if (index === sid) {
+                                // console.log("是自己"+this.selected[sid]);
+                            } else {
+                                //console.log("indexes==>"+this.skus[i].indexes[index]);
+                                this.goodsItem.spec[index].option[this.skus[i].indexes[index]].disabled = false;
+                            }
+                        }
+                    }
+                }
+            },
+            intEqual(a, b) {
+                if (a.length !== b.length) {
+                    return false
+                } else {
+                    // 循环遍历数组的值进行比较
+                    for (let i = 0; i < a.length; i++) {
+                        if (a[i] !== b[i]) {
+                            return false
+                        }
+                    }
+                    return true;
+                }
+                return true;
+            },
+            changeInfo() {
+                for (let i=0; i<this.skus.length; i++) {
+                    const sku = this.skus[i];
+                    if (this.intEqual(sku.indexes, this.selected)) {
+                        console.log("equal");
+                        this.selItem.sku.id = sku.id;
+                        this.selItem.sku.unitPrice = sku.price;
+                        this.selItem.count = 1;
+                        this.stock = sku.stock;
+                        this.selItem.product.id = this.goodsItem.id;
+                        this.selItem.product.title = this.goodsItem.title;
+                        if (sku.images==="") {
+                            this.selItem.product.img = this.goodsItem.images[0]
+                        }else {
+                            this.selItem.product.img = sku.image;
+                        }
+                        let ii = 0;
+                        this.selItem.sku.metatit = [];
+                        this.selected.forEach((it) => {
+                            const me = {
+                                label: this.goodsItem.spec[ii].label,
+                                value: this.goodsItem.spec[ii++].option[it].alt
+                            };
+                            this.selItem.sku.metatit.push(me);
+                        })
+                    }
+                }
+            },
+            loadGoodsInfo(){
+                this.goodsItem = goodsIt;
+                this.skus = this.goodsItem.skus;
 
+                //判断是否选择是否有图片
+                this.goodsItem.spec.forEach( (item) => {
+                    if (item.isImage) {
+                        this.isImage = true;
+                    }
+                });
+                //处理地址
+                //form
+                this.fromAddr.province.code = Object.keys(this.goodsItem.express.from[0])[0];
+                this.fromAddr.province.label = Object.values(this.goodsItem.express.from[0])[0];
+                this.fromAddr.city.code = Object.keys(this.goodsItem.express.from[1])[0];
+                this.fromAddr.city.label = Object.values(this.goodsItem.express.from[1])[0];
+                //to
+                this.toAddr = this.goodsItem.express.to;
+                this.modifyDataToAddr();
+
+                //afterService payMethod
+                this.afterService = this.goodsItem.afterService.split(',');
+                this.payMethod = this.goodsItem.payMethod.split(',');
+
+          /*      this.skus.forEach( (item) => {
+                    item.indexes = item.indexes.split('_');
+                    const numArray = [];
+                    item.indexes.forEach( (indexIt) => {
+                        numArray.push(parseInt(indexIt))
+                    });
+                    console.log("item=>>>"+item+"numArray===>"+numArray);
+                    item.indexes = numArray;
+                });*/
+                //this.selItem = this.skus[0];
+                this.skus[0].indexes.forEach( (index) => {
+                    this.selected.push(index);
+                });
+                for (let i=0; i<this.selected.length; i++) {
+                    this.goodsItem.spec[i].option[this.selected[i]].disabled = false;
+                    this.change(i)
+                }
+                this.changeInfo();
+                console.log(this.goodsItem);
+            },
+
+        },
+        mounted() {
+            this.loadGoodsInfo();
+        },
+        watch:{
+            selected: {
+                deep: true,
+                handler(){
+
+                }
             }
         }
 
@@ -241,6 +393,7 @@
         line-height: 12px;
     }
     .r-rmb {
+
         font-style: normal;
         font-weight: bolder;
         margin-right: 4px;

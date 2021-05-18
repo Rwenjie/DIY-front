@@ -15,7 +15,7 @@
                     <el-image
                             style="display: block;float: left; width: 20%; margin-right: 20px"
                             :src="item.image"
-                            :fit="cover">
+                            fit="cover">
                     </el-image>
                     <span style="display: block;  width: 80%;  margin-left:15px; padding-left: 10px">
                         <a href="#" style="display: block;

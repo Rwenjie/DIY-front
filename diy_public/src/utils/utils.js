@@ -1,13 +1,22 @@
 /**
- * created by liuxiaodengdeng on 2019/07/21
+ * 将category的叶子节点设置为undefined
+ * @param data
+ * @returns {*}
  */
+export function getTreeData(data) {
 
-/**
- * 函数节流
- * @param {Function} fn
- * @param {number} threshhold
- * @returns {Function}
- */
+  // 循环遍历json数据
+  for (var i = 0; i < data.length; i++) {
+    if (data[i].children.length < 1) {
+      // children若为空数组，则将children设为undefined
+      data[i].children = undefined;
+    } else {
+      // children若不为空数组，则继续 递归调用 本方法
+      getTreeData(data[i].children);
+    }
+  }
+  return data;
+}
 
 export function throttle(fn, threshhold = 100) {
   let timeout = null
@@ -29,7 +38,6 @@ export function throttle(fn, threshhold = 100) {
 
 export function normalizeData(dataList, renderLayer, level) {
   // console.log('dataList', dataList)
-
   dataList.forEach(item => {
     if (renderLayer === 1) {
       item.children = []

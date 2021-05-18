@@ -56,9 +56,9 @@
         data() {
             return {
                 resizeRender: null,
-                colWidth: 310,
+                colWidth: 300,
                 imgList: [],
-                colNumbers: 0,
+                colNumbers: 4,
                 goodsList: [],
                 starStatus: true,
                 star: 199,
@@ -68,9 +68,10 @@
             //计算图片列数
             getColNumbers() {
                 let clientWidth = this.$refs.waterfall.clientWidth;
-                this.colNumbers = Math.floor(clientWidth / this.colWidth);
-                this.$refs.container.style.marginLeft =
-                    (clientWidth - this.colWidth * this.colNumbers) / 2 + 'px'
+                console.log(clientWidth / this.colWidth)
+                //this.colNumbers = Math.floor(clientWidth / this.colWidth);
+               /* this.$refs.container.style.marginLeft =
+                    (clientWidth - this.colWidth * this.colNumbers) / 2 + 'px'*/
             },
             //读取图片
             loadImage() {
@@ -106,22 +107,32 @@
         mounted() {
             this.loadImage();
             this.loadGoods();
-            this.resizeRender = throttle(this.resize, 200)
+            this.resizeRender = throttle(this.resize, 200);
+            console.log(this.resizeRender);
             window.addEventListener('resize', this.resizeRender)
         },
         beforeDestroy() {
             window.removeEventListener('resize', this.resizeRender)
-        }
+        },
+
     }
 </script>
 <style lang="scss" scoped>
+
+    .container {
+        max-width: 1330px;
+        margin: 0 auto;
+    }
+    #home {
+        background-color: #F5F8FA;
+    }
     .waterfall-width-js {
         margin: 0 auto;
         overflow: hidden;
     }
     .image-col {
         float: left;
-        width: 310px;
+        width: 320px;
         .image-box {
             margin: 10px 5px;
         }
