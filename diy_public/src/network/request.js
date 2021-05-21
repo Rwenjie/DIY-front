@@ -27,6 +27,7 @@ export function request(config) {
   //响应拦截器
   instance.interceptors.response.use(success => {
     //业务逻辑错误
+    console.log("success=>", success);
     if (success.status && success.status == 200) {
       if (success.data.code == 500 || success.data.code == 401 || success.data.code == 403) {
         Message({message: success.data.message, type: 'error'});
@@ -39,13 +40,14 @@ export function request(config) {
     }
     return success.data;
   }, error => {
+    console.log("error=>", error);
     if (error.response.code == 504 || error.response.code == 404) {
       Message({message: '服务器被吃了o(╯□╰)o', type: 'error'});
     } else if (error.response.code == 403) {
       Message({message: '权限不足，请联系管理员！', type: 'error'});
     } else if (error.response.code == 401) {
       Message({message: '尚未登录，请登录', type: 'error'});
-      router.replace('/');
+      /*router.replace('/');*/
     } else {
       if (error.response.data.message) {
         Message({message: error.response.data.message, type: 'error'});

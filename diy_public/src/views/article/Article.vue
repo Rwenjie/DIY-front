@@ -15,15 +15,13 @@
                     <v-divider></v-divider>
                     <div style="max-width: 950px;
                                 margin: 0 auto">
-                        <div style="margin-bottom: 5px"><i class="el-icon-caret-top"></i></div>
+                        <!--<div style="margin-bottom: 5px"><i class="el-icon-caret-top"></i></div>
                         <div style="margin-bottom: 5px">上一篇</div>
-                        <div style="margin-bottom: 5px">编码字母-让我们成为侦探</div>
+                        <div style="margin-bottom: 5px">编码字母-让我们成为侦探</div>-->
 
                         <div style="padding-top: 30px">
                             <el-breadcrumb separator-class="el-icon-arrow-right">
-                                <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                                <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-                                <el-breadcrumb-item>活动列表</el-breadcrumb-item>
+                                <el-breadcrumb-item v-for="ca in categoryPath">{{ca.label}}</el-breadcrumb-item>
                             </el-breadcrumb>
                         </div>
                         <div style="max-width: 950px;
@@ -40,7 +38,7 @@
                                     <h1 class="post-title" style="margin-bottom: 30px;
                                                                    text-align: left;
                                                                     margin-top: 30px;">
-                                        <a href="http://krokotak.com/2015/07/coded-letter-lets-be-detectives/">CODED LETTER – Let’s Be Detectives</a>
+                                        <a href="http://krokotak.com/2015/07/coded-letter-lets-be-detectives/">{{article.title}}</a>
                                     </h1>
                                     <div class="post-meta-top" style="border-bottom: 1px solid #e0e0e0;
                                                                             border-top: 1px solid #e0e0e0;
@@ -50,16 +48,16 @@
                                             <el-col :span="12">
                                                 <div style="text-align: left">
                                                     <span v-if="starStatus">
-                                                        <v-btn icon color="red" @click="cancelLike">
+                                                        <v-btn icon color="red" @click="cancelStar">
                                                             <v-icon>mdi-star</v-icon>
                                                         </v-btn>
-                                                        <span style="margin-top: 5px">199人收藏</span>
+                                                        <span style="margin-top: 5px">{{article.star}}人点赞</span>
                                                     </span>
                                                     <span v-else>
-                                                        <v-btn icon color="red" @click="giveLike">
+                                                        <v-btn icon color="red" @click="giveStar">
                                                             <v-icon>mdi-star-outline</v-icon>
                                                         </v-btn>
-                                                        <span>199人收藏</span>
+                                                        <span>{{article.star}}人点赞</span>
                                                     </span>
                                                 </div>
                                             </el-col>
@@ -92,7 +90,7 @@
                                         </el-row>
                                     </div>
                                     <div class="post-content">
-                                        <p style="text-align: center;"><strong>Watch video:</strong></p>
+                                      <!--  <p style="text-align: center;"><strong>Watch video:</strong></p>
                                         <p style="text-align: center;">
                                             <iframe width="560" height="315" src="https://www.youtube.com/embed/C9U419Htbmc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br>
 
@@ -103,6 +101,9 @@
                                         <p style="text-align: center;">&nbsp;printable templates:</p>
                                         <p><a href="http://print.krokotak.com/p?x=05bfe34161c64292924bc6ca437a267f"><img class="wp-image-68536 size-medium alignleft" src="http://krokotak.com/wp-content/uploads/2017/09/pum-212x300.jpg" alt="" width="212" height="300" srcset="http://krokotak.com/wp-content/uploads/2017/09/pum-212x300.jpg 212w, http://krokotak.com/wp-content/uploads/2017/09/pum-263x372.jpg 263w, http://krokotak.com/wp-content/uploads/2017/09/pum.jpg 271w" sizes="(max-width: 212px) 100vw, 212px"></a></p>
                                         <p style="text-align: center;"><a href="http://print.krokotak.com/p?x=b1348c74aa274e1ba125be565a257e15"><img class="wp-image-68537 size-medium alignleft" src="http://krokotak.com/wp-content/uploads/2017/09/sk-212x300.jpg" alt="" width="212" height="300" srcset="http://krokotak.com/wp-content/uploads/2017/09/sk-212x300.jpg 212w, http://krokotak.com/wp-content/uploads/2017/09/sk-263x372.jpg 263w, http://krokotak.com/wp-content/uploads/2017/09/sk.jpg 271w" sizes="(max-width: 212px) 100vw, 212px"></a></p>
+                                   -->
+                                    <div style="text-align: left" v-html=article.text>
+                                    </div>
                                     </div>
                                 </div>
                             </v-sheet>
@@ -173,6 +174,8 @@
     import CategoryNav from "components/content/categoryNav/CategoryNav";
   /*  import RComment from "components/common/comment/comment.vue"*/
     import goodsItem from './data'
+    import {cancelStar, getArticleById, getStar, getStarState} from "../../network/article";
+    import {getAllCategory} from "../../network/common";
 
     export default {
         name: "Article",
@@ -264,33 +267,58 @@
                         date: "2020/02/04"
                     },
                 ],
-                starStatus: true,
+                starStatus: false,
                 star: 199,
                 tags: ["halloween","hand","pumpkin","skeleton","hand","pumpkin","skeleton"],
                 categories:["With hands and feet", "paper toys", "halloween", "educational activities", "back to school"],
                 goods: [],
+                categoryPath: [],
+                articleId: this.$route.params.articleId,
+                article: {},
             }
         },
         methods: {
-            cancelLike() {
-                this.starStatus = false;
-                this.star--;
+            cancelStar() {
+                cancelStar(this.articleId).then( res => {
+                    this.article.star -= 1;
+                    this.getStarState();
+                });
             },
-            giveLike() {
-                this.starStatus = true;
-                this.star+=1;
+            giveStar() {
+                getStar(this.articleId).then( res => {
+                    this.article.star += 1;
+                    this.getStarState();
+                });
             },
-            addToCart() {
-                this.$store.dispatch('addCart', {
-
-                }).then(res => {
+            getStarState() {
+                getStarState(this.articleId).then( res => {
                     console.log(res);
+                    this.starStatus = res.data;
                 })
-            }
+            },
+            loadArticleInfo() {
+                console.log(this.articleId);
+                getArticleById(this.articleId).then( res => {
+                    this.article = res.data;
+                    //获得文章的分类信息
+                    this.loadCategory(res.data.categoryId);
+                    //获得用户是否star该文章
+                    this.getStarState();
+
+                })
+            },
+            loadGoodsInfo() {
+
+            },
+            loadCategory(cid) {
+                getAllCategory(cid).then( res=> {
+                    this.categoryPath = res.data;
+                })
+            },
         },
         mounted() {
-            this.goods = goodsItem
-            console.log(this.dataList);
+            this.loadArticleInfo();
+
         }
     }
 </script>

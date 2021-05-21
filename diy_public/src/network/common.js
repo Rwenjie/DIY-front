@@ -14,3 +14,14 @@ export function getCategories(){
         url: '/category/listing',
     })
 }
+//获得分类目录
+export function getAllCategory(cid) {
+    return request({
+        url: '/category/cid',
+        params: {
+            cid
+        }
+    })
+}
+
+

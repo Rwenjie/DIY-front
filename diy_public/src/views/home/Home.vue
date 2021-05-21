@@ -5,30 +5,24 @@
 
         <div ref="waterfall" class="waterfall-width-js">
             <div ref="container" class="container">
-                <div class="image-col" v-for="(col, index) in imgList" :key="index">
-                    <div class="image-box" v-for="img in col" :key="img">
-                        <img :src="img" alt="" />
+                <div class="image-col" v-for="(col, index) in articleList" :key="index">
+                    <div class="image-box" v-for="article in col" :key="img">
+                        <img :src="article.image" alt="" @click="toArticle(article.id)" />
                         <div>
-                            <h3>文章标题</h3>
-                            <p>diy数字油画定制手绘油彩画手工填色填充照片定做油画礼物装饰画</p>
+                            <h3>{{article.title}}</h3>
+                            <p>{{article.brief}}</p>
                             <el-row>
                                 <el-col :span="12">
                                     <span v-if="starStatus">
                                         <v-btn icon color="red" @click="cancelLike">
                                             <v-icon>mdi-star</v-icon>
                                             </v-btn>
-                                         <span style="margin-top: 5px">199人收藏</span>
-                                    </span>
-                                    <span v-else>
-                                        <v-btn icon color="red" @click="giveLike">
-                                            <v-icon>mdi-star-outline</v-icon>
-                                            </v-btn>
-                                         <span>199人收藏</span>
+                                         <span style="margin-top: 5px">{{article.star}}</span>
                                     </span>
                                 </el-col>
                                 <el-col :span="12">
                                     <div style="text-align: right">
-                                        <span style="text-align: right;margin-right: 10px">￥199.00</span>
+                                        <span style="text-align: right;margin-right: 10px">{{article.category.label}}</span>
                                     </div>
                                 </el-col>
                             </el-row>
@@ -46,7 +40,7 @@
     import CategoryNav from "components/content/categoryNav/CategoryNav";
 
     import { throttle } from '@/utils/utils'
-    import {getAllGoods} from "../../network/item";
+    import {getAllGoods, getArticle} from "../../network/item";
     export default {
         name: 'Home',
         components: {
@@ -55,6 +49,7 @@
 
         data() {
             return {
+                articleList: [],
                 resizeRender: null,
                 colWidth: 300,
                 imgList: [],
@@ -68,7 +63,6 @@
             //计算图片列数
             getColNumbers() {
                 let clientWidth = this.$refs.waterfall.clientWidth;
-                console.log(clientWidth / this.colWidth)
                 //this.colNumbers = Math.floor(clientWidth / this.colWidth);
                /* this.$refs.container.style.marginLeft =
                     (clientWidth - this.colWidth * this.colNumbers) / 2 + 'px'*/
@@ -90,11 +84,10 @@
                 this.imgList = [];
                 this.loadImage()
             },
-            loadGoods() {
-                getAllGoods().then( res => {
-                    console.log(res);
-                })
-            },
+
+            /**
+             * 网络请求相关方法
+             */
             cancelLike() {
                 this.starStatus = false;
                 this.star--;
@@ -102,13 +95,62 @@
             giveLike() {
                 this.starStatus = true;
                 this.star+=1;
+            },
+            toArticle(id) {
+                this.$router.push("article/" + id)
+            },
+            loadArticle() {
+                let dataLen = 0;
+                getArticle().then( res => {
+
+                    const art = res.data;
+                   for (let i=0; i<12; i++) {
+                       const data = {
+                           image: require(`@/assets/images/${i}.jpg`),
+                           title: "文章标题",
+                           look: 43,
+                           star: 54,
+                           brief: "超简单母亲节相片卡片手工制作教程",
+                           category: {
+                               label: "绘画"
+                           }
+                       };
+                       art.push(data)
+                   }
+
+
+                    console.log("art===>");
+                    console.log(art);
+                    /*this.article.push(...res.data);*/
+                    for (let i = 0; i<art.length; i++) {
+                        let colIndex = i % this.colNumbers;
+                        console.log("colIndex"+colIndex);
+                        if (this.articleList[colIndex]) {
+                            this.articleList[colIndex].push(art[i])
+                        } else {
+                            this.$set(this.articleList, colIndex, [art[i]])
+                        }
+                    }
+                    console.log(res);
+                });
+              /*  for (let i = 0; i < 12; i++) {
+                    let colIndex = i % this.colNumbers;
+
+                    if (this.articleList[colIndex]) {
+                        this.articleList[colIndex].push(data)
+                    } else {
+                        this.$set(this.articleList[colIndex], colIndex, [data])
+                    }
+                }*/
             }
+        },
+        created() {
+            //加载文章信息
+            this.loadArticle();
         },
         mounted() {
             this.loadImage();
-            this.loadGoods();
             this.resizeRender = throttle(this.resize, 200);
-            console.log(this.resizeRender);
             window.addEventListener('resize', this.resizeRender)
         },
         beforeDestroy() {

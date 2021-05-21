@@ -14,3 +14,22 @@ export function expressDetail() {
         url: '/express/detail',
     })
 }
+
+//获得用户地址
+
+export function getAddressByUser() {
+    return request( {
+        url: "/address/user",
+    })
+}
+
+export function insertAddr(address) {
+    return request({
+        url: '/address/insert',
+        data: address,
+        method: "post",
+        headers:{
+            'Content-Type':'application/json;charset=utf-8'
+        }
+    })
+}

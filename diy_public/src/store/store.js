@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 import cart from "./modules/cart"
 import createGood from "./modules/createGood"
 import category from "./modules/category";
+import user from "./modules/user"
 
 import { userInfo,} from "network/login";
 
@@ -62,7 +63,8 @@ const store = new Vuex.Store({
   modules: {
     cart,
     createGood,
-    category
+    category,
+    user
   }
 });
 

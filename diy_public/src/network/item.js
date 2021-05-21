@@ -18,7 +18,6 @@ export function categoryList(){
 
 //发布商品
 export function submitGoods(goods) {
-    console.log(Qs.stringify(goods))
     return request({
         url: '/goods/submit',
         data: goods,
@@ -58,5 +57,70 @@ export function goodsChangeStatus(gid, status) {
 export function getAllGoods() {
     return request({
         url:"/goods/listing",
+    })
+}
+
+/**
+ * 根据文章查询商品
+ * @param aid
+ * @returns {AxiosPromise}
+ */
+export function getItemByArticle(aid) {
+    return request( {
+        url: "/goods/aid",
+        params: {
+            aid
+        }
+    })
+}
+
+export function getArticle() {
+    return request({
+        url: '/article/all',
+    })
+}
+
+/**
+ * 获取用户的点赞状态
+ * @param gid
+ * @returns {AxiosPromise}
+ */
+export function getItemStarState(gid) {
+    return request( {
+        url: '/item/star',
+        params: gid,
+
+    })
+}
+
+/**
+ * //用户给商品点赞
+ * @param gid
+ * @returns {AxiosPromise}
+ */
+export function getItemStar(gid) {
+    return request( {
+        url: '/item/star',
+        data: gid,
+        method: "post",
+        headers:{
+            'Content-Type':'application/json;charset=utf-8'
+        }
+    })
+}
+
+/**
+ * 用户取消点赞
+ * @param gid
+ * @returns {AxiosPromise}
+ */
+export function cancelItemStar(gid) {
+    return request( {
+        url: '/item/cancel',
+        data: gid,
+        method: "post",
+        headers:{
+            'Content-Type':'application/json;charset=utf-8'
+        }
     })
 }

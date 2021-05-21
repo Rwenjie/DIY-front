@@ -25,7 +25,7 @@
                 <v-btn icon>
                     <v-icon>mdi-basket-fill</v-icon>
                 </v-btn>
-                {{goodsItem.purchased}}人已购买
+                {{goodsItem.sold_count}}人已购买
             </span>
         </div>
         <h3><p>{{goodsItem.title}}</p></h3>
@@ -101,7 +101,7 @@
                         <el-button @click="addCart">加入购物车</el-button>
                     </el-col>
                     <el-col :span="10" style="text-align: center">
-                        <el-button>立即购买</el-button>
+                        <el-button @click="purchaseNow">立即购买</el-button>
                     </el-col>
                 </el-row>
             </div>
@@ -145,6 +145,7 @@
     require('vue-select-image/dist/vue-select-image.css');
     import goodsIt from '../data'
     import ImageSelect from "../../../components/common/imageSelect/ImageSelect";
+    import {cancelItemStar, getItemByArticle, getItemStar, getItemStarState} from "../../../network/item";
 
     export default {
         name: "GoodsDetail",
@@ -155,7 +156,7 @@
         data() {
             return{
                 selected: [],
-                starStatus: true,
+                starStatus: false,
                 selItem: {
                     id: "",  //编号
                     count: 1,       //数量
@@ -188,14 +189,10 @@
                         code: ""
                     }
                 },
+                articleId: this.$route.params.articleId,
                 toAddrText: "",
                 toAddr: [],
                 selectedList: [],
-               /* address:[
-                    { "140000": "山西省" },
-                    { "140100": "太原市"},
-                    { "140105": "小店区"}],
-                addressCode: ["140000", "140100", "140105"],*/
                 diaAddressVisible: false,
                 skus: [],
                 selectedAddress: '',
@@ -206,21 +203,43 @@
             }
         },
         methods: {
+            //点赞
             giveLike() {
+                alert(this.goodsItem.id)
+                getItemStar(this.goodsItem.id).then( res => {
+                    this.likeState();
+                    if (res.status == 200) {
+                        this.goodsItem.star +=1;
+                    }
 
+                })
             },
+            //取消点赞
             cancelLike() {
+                cancelItemStar(this.goodsItem.id).then( res => {
 
+                    this.likeState();
+                    if (res.status == 200) {
+                        this.goodsItem.star -=1;
+                    }
+                })
+            },
+            //更新点赞状态
+            likeState() {
+                getItemStarState(this.goodsItem.id).then( res => {
+                    this.starStatus = res.data;
+                })
             },
             loadAddress() {
                 this.diaAddressVisible = true;
             },
             addCart() {
-
                 this.$store.dispatch("addCart", this.selItem).then( res => {
                     alert(res)
                 });
 
+            },
+            purchaseNow() {
 
             },
             addrDialogClose() {
@@ -315,48 +334,50 @@
                 }
             },
             loadGoodsInfo(){
-                this.goodsItem = goodsIt;
-                this.skus = this.goodsItem.skus;
+                /*// getItemByArticle().then( res => {
+                //
+                // });*/
+                getItemByArticle(this.articleId).then( res => {
+                    console.log("article===================>");
+                    const item = res.data;
+                    item.spec = JSON.parse(item.spec);
+                    item.payMethod = JSON.parse(item.payMethod);
+                    console.log(item);
+                    this.goodsItem = item;
 
-                //判断是否选择是否有图片
-                this.goodsItem.spec.forEach( (item) => {
-                    if (item.isImage) {
-                        this.isImage = true;
-                    }
-                });
-                //处理地址
-                //form
-                this.fromAddr.province.code = Object.keys(this.goodsItem.express.from[0])[0];
-                this.fromAddr.province.label = Object.values(this.goodsItem.express.from[0])[0];
-                this.fromAddr.city.code = Object.keys(this.goodsItem.express.from[1])[0];
-                this.fromAddr.city.label = Object.values(this.goodsItem.express.from[1])[0];
-                //to
-                this.toAddr = this.goodsItem.express.to;
-                this.modifyDataToAddr();
 
-                //afterService payMethod
-                this.afterService = this.goodsItem.afterService.split(',');
-                this.payMethod = this.goodsItem.payMethod.split(',');
+                    //this.goodsItem = goodsIt;
+                    this.skus = this.goodsItem.skus;
 
-          /*      this.skus.forEach( (item) => {
-                    item.indexes = item.indexes.split('_');
-                    const numArray = [];
-                    item.indexes.forEach( (indexIt) => {
-                        numArray.push(parseInt(indexIt))
+                    //判断是否选择是否有图片
+                    this.goodsItem.spec.forEach( (item) => {
+                        if (item.isImage) {
+                            this.isImage = true;
+                        }
                     });
-                    console.log("item=>>>"+item+"numArray===>"+numArray);
-                    item.indexes = numArray;
-                });*/
-                //this.selItem = this.skus[0];
-                this.skus[0].indexes.forEach( (index) => {
-                    this.selected.push(index);
+                    //处理地址
+                    //form
+                    this.fromAddr.province.code = Object.keys(this.goodsItem.express.from[0])[0];
+                    this.fromAddr.province.label = Object.values(this.goodsItem.express.from[0])[0];
+                    this.fromAddr.city.code = Object.keys(this.goodsItem.express.from[1])[0];
+                    this.fromAddr.city.label = Object.values(this.goodsItem.express.from[1])[0];
+                    //to
+                    this.toAddr = this.goodsItem.express.to;
+                    this.modifyDataToAddr();
+
+                    this.skus[0].indexes.forEach( (index) => {
+                        this.selected.push(index);
+                    });
+                    for (let i=0; i<this.selected.length; i++) {
+                        this.goodsItem.spec[i].option[this.selected[i]].disabled = false;
+                        this.change(i)
+                    }
+                    this.changeInfo();
+                    console.log(this.goodsItem);
+
+                    //加载商品喜欢
+                    this.likeState()
                 });
-                for (let i=0; i<this.selected.length; i++) {
-                    this.goodsItem.spec[i].option[this.selected[i]].disabled = false;
-                    this.change(i)
-                }
-                this.changeInfo();
-                console.log(this.goodsItem);
             },
 
         },

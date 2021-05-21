@@ -1,5 +1,5 @@
 const goodsIt = {
-    id: '3123',
+    id: 21,
     title: 'diy小屋手工微景观小房子咖啡屋花房拼装店铺摆件礼物女微缩模型',
     description: "适合14岁以下的小盆友的玩具",
     star: 199,
@@ -23,6 +23,136 @@ const goodsIt = {
     afterService: "正品保证, 极速退款退,货运费险",
     payMethod: "支付宝, 微信支付,银联支付",
     spec: [
+        {
+            label: "尺码",
+            sId: 1,
+            isImage: false,
+            VariablePricing: true,
+            option: [
+                {
+                    id: 0,
+                    alt: "36",
+                    arc: "",
+                    disabled: true,
+                    sId: 1,
+                },
+                {
+                    id: 1,
+                    alt: "38",
+                    arc: "",
+                    disabled: true,
+                    sId: 1,
+                },
+                {
+                    id: 2,
+                    alt: "40",
+                    arc: "",
+                    disabled: true,
+                    sId: 1,
+                },
+                {
+                    id: 3,
+                    alt: "42",
+                    arc: "",
+                    disabled: true,
+                    sId: 1,
+                },
+                {
+                    id: 4,
+                    alt: "44",
+                    arc: "",
+                    disabled: true,
+                    sId: 1,
+                },
+                {
+                    id: 5,
+                    alt: "42",
+                    arc: "",
+                    disabled: true,
+                    sId: 1,
+                },
+                {
+                    id: 6,
+                    alt: "44",
+                    arc: "",
+                    disabled: true,
+                    sId: 1,
+                },
+            ]
+        },
+        {
+            label: "颜色分类",
+            isImage: true,
+            VariablePricing: true,
+            option: [
+                {
+                    id: 0,
+                    src: 'https://unsplash.it/200?random',
+                    alt: 'Alt Image 1',
+                    disabled: true,
+                    sId: 2,
+                },
+                {
+                    id: 1,
+                    src: 'https://unsplash.it/200?random',
+                    alt: 'Alt Image 2',
+                    disabled: true,
+                    sId: 2,
+                },
+                {
+                    id: 2,
+                    src: 'https://unsplash.it/200?random',
+                    alt: 'Alt Image 3',
+                    disabled: true,
+                    sId: 2,
+                },
+                {
+                    id: 3,
+                    src: 'https://unsplash.it/200?random',
+                    alt: 'Alt Image 3',
+                    disabled: true,
+                    sId: 2,
+                },
+                /* {
+                     id: "5",
+                     alt: "黑色",
+                     arc:  'https://unsplash.it/200?random',
+                     disabled: true
+                 },
+                 {
+                     id: "6",
+                     alt: "黑色升级版",
+                     arc: 'https://unsplash.it/200?random',
+                     disabled: true
+                 },
+                 {
+                     id: "7",
+                     alt: "湖蓝",
+                     disabled: false,
+                     arc: 'https://unsplash.it/200?random',
+                 },
+                 {
+                     id: "8",
+                     alt: "湖蓝升级版",
+                     disabled: true,
+                     arc: 'https://unsplash.it/200?random',
+                 },
+                 {
+                     id: "9",
+                     alt: "黄色",
+                     disabled: false,
+                     arc: 'https://unsplash.it/200?random',
+                 },
+                 {
+                     id: "10",
+                     alt: "黄色升级版",
+                     disabled: false,
+                     arc: 'http://image5.suning.cn/uimg/b2c/newcatentries/0070130691-000000000826244625_5_800x800.jpg',
+                 },*/
+            ]
+        }
+
+    ][
         {
             label: "尺码",
             sId: 1,

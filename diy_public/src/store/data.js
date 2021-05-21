@@ -8,7 +8,7 @@
 
 const itemList = [
     {
-        id: "42345234",  //编号
+        id: 21,  //编号
         count: 1,       //数量
         amount: 0.00,   //金额
         product: {

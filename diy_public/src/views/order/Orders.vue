@@ -20,24 +20,23 @@
                 </el-breadcrumb>
             </v-toolbar>
             <v-divider/>
-            <div>
+            <div style="margin: 0 20px">
                 <v-simple-table>
                     <template v-slot:default>
                         <thead>
                         <tr>
-                            <th class="text-left">
-                                商品
-                            </th>
-                            <th class="text-left">
-                                Calories
-                            </th>
+                            <th class="text-left">商品</th>
+                            <th class="text-left">单价</th>
+                            <th class="text-left">数量</th>
+                            <th class="text-left">商品操作</th>
+                            <th class="text-left">实付款</th>
+                            <th class="text-left">交易状态</th>
+                            <th class="text-left">交易操作</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr
-                                v-for="item in desserts"
-                                :key="item.name"
-                        >
+                        <tr v-for="item in desserts"
+                            :key="item.name">
                             <td>{{ item.name }}</td>
                             <td>{{ item.calories }}</td>
                         </tr>

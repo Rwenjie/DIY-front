@@ -12,7 +12,10 @@
             <main-tab-bar style=""/>
           </el-header>
           <el-main style="padding: 20px  0 0 0">
-            <router-view/>
+            <keep-alive>
+              <router-view/>
+            </keep-alive>
+
           </el-main>
           <el-footer>Footer</el-footer>
         </el-container>

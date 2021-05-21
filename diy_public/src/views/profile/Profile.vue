@@ -26,15 +26,13 @@
                         <v-list-group
                                 :value="true"
                                 v-for="(item, id) in items"
-                                v-key="id"
                                 prepend-icon="mdi-account-circle">
                             <template v-slot:activator>
                                 <v-list-item-title>{{item.title}}</v-list-item-title>
                             </template>
                             <!--二级-->
                             <v-list-item
-                                    v-for="(subItem, i) in item.items"
-                                    :key="i"
+                                    v-for="(subItem, index) in item.items"
                                     :to="basePath + item.path + subItem.path"
                                     link>
                                 <v-list-item-title v-text="subItem.title"></v-list-item-title>
@@ -42,21 +40,6 @@
                         </v-list-group>
                     </v-list>
                 </v-card>
-<!--                <v-toolbar flat class="transparent">
-                    <v-list class="pa-0">
-                        <v-list-tile avatar>
-                            <v-list-tile-avatar>
-                                <img src="/assets/2.jpeg">
-                            </v-list-tile-avatar>
-                            <v-list-tile-content>
-                                <v-list-tile-title>文攀</v-list-tile-title>
-                            </v-list-tile-content>
-                        </v-list-tile>
-                    </v-list>
-                </v-toolbar>
-                <v-divider/>-->
-                <!-- 左侧菜单 -->
-
             </el-aside>
 
             <el-main style="border: 1px solid red;">
@@ -66,7 +49,9 @@
                 </el-breadcrumb>
                 <div style="margin-top: 12px">
                         <!--定义一个路由锚点，Layout的子组件内容将在这里展示-->
-                    <router-view/>
+                    <keep-alive>
+                        <router-view/>
+                    </keep-alive>
 
                 </div>
             </el-main>

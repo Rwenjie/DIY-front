@@ -24,6 +24,7 @@ const Goods = () => import('../views/profile/item/Goods');
 const ArticleList = () => import('../views/profile/article/ArticleList');
 const Editor = () => import('../views/profile/article/Editor');
 
+const OrderDetail = () => import('../views/order/orderDetail/OrderDetail');
 
 
 Vue.use(Router);
@@ -39,8 +40,9 @@ const routes = [
         component: Home
     },
     {
-        path: '/article',
+        path: '/article/:articleId',
         name: "article",
+        title: "文章",
         component: Article
     },
     {
@@ -108,7 +110,13 @@ const routes = [
                 component: Cart
             },
 
+
         ]
+    },
+    {
+        path: '/order/detail',
+        name: 'OrderDetail',
+        component: OrderDetail,
     }
 ];
 

@@ -21,4 +21,11 @@ export const ADD_SKUS = "add-skus";
 export const ADD_COUNTER = 'add_counter';
 export const ADD_TO_CART = 'add_to_cart';
 
-export const LOAD_CATEGORIES = "load_categories"
+export const LOAD_CATEGORIES = "load_categories";
+
+
+export const LOAD_ADDRESS = "load_address";
+
+export const ADD_ADDRESS = "add_address";
+
+export const CHANGE_DEFAULT_ADDR = "change_default_addr";
