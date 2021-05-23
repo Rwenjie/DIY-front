@@ -152,7 +152,7 @@
                                     width="100%"
                                     style="padding: 5px 0 10px 5px">
                                 <el-row style="padding: 50px">
-                                    <r-comment :articleId="articleId"></r-comment>
+                                    <r-comment></r-comment>
                                     <!--<review :dataList="dataList"></review>-->
                                     <!--<r-comment :articleId="cb6e6cad-bb02-46f6-8640-055473d451d9"></r-comment>-->
                                 </el-row>

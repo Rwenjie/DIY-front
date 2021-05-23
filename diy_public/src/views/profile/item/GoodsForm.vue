@@ -1,5 +1,5 @@
 <template>
-  <v-stepper v-model="step">
+  <v-stepper v-model="step" >
     <v-stepper-header>
       <v-stepper-step :complete="step > 1" step="1">基本信息</v-stepper-step>
       <v-divider/>
@@ -18,9 +18,9 @@
               <v-col cols="6">
                 <v-select
                         v-model="goods.article"
-                        :hint="`${goods.article.id}, ${goods.article.title}`"
+                        :hint="`${goods.article.id}, ${goods.article.label}`"
                         :items="articles"
-                        item-text="title"
+                        item-text="label"
                         item-value="id"
                         label="关联文章"
                         return-object
@@ -58,19 +58,39 @@
                     action="/api/file/import"
                     list-type="picture-card"
                     :limit = 7
-                    :headers="myHeaders"
-                    :file-list="goods.images"
                     multiple
+                    :headers="myHeaders"
+                    :file-list="imgList"
+                    :on-preview="handlePreview"
                     :on-success="uploadSuccess"
                     :on-error="uploadError"
                     :before-remove="beforeRemove"
                     :on-remove="handleRemove">
-              <template #default>
-                <i class="el-icon-plus"></i>
-              </template>
+              <i class="el-icon-plus"></i>
+<!--              <template #default>-->
+<!--                <i class="el-icon-plus"></i>-->
+<!--              </template>-->
             </el-upload>
+            <el-dialog :visible.sync="dialogVisible">
+              <img width="100%" :src="dialogImageUrl" alt="">
+            </el-dialog>
             <v-divider></v-divider>
           </div>
+          <h4><p>视频上传</p></h4>
+          <el-upload
+                  class="upload-demo"
+                  action="https://jsonplaceholder.typicode.com/posts/"
+                  :on-preview="handlePreview"
+                  :on-remove="handleRemove"
+                  :before-remove="beforeRemove"
+                  multiple
+                  :limit="1"
+                  :on-exceed="handleExceed"
+                  :file-list="videoList">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传一个视频文件</div>
+          </el-upload>
+          <v-divider></v-divider>
           <h4><p>文字描述</p></h4>
           <v-editor v-model="goods.description" upload-url="/upload/image"/>
         </div>
@@ -79,74 +99,7 @@
      <!-- 3、规格参数-->
       <v-stepper-content step="3">
         <p style="text-align:left">列出您提供的所有规格。买家将按在这里的顺序看到它们。</p>
-        <div>
-          <el-row v-for="(variation, Id) in variations" :key="Id">
-            <el-col :span="12">
-                <span v-show=variation.show>{{variation.name}}</span>
-                <span v-show=variation.show><el-button size="small" type="text" @click="rename(Id)">改名</el-button></span>
-                <span v-show=!variation.show>
-                                <el-input v-model="variation.name"
-                                          @change="renameVariation(Id)"
-                                          size="small" >
-                                    <template #append>
-                                        <el-button @click="renameVariation(Id)">修改</el-button>
-                                    </template>
-                                </el-input>
-                            </span>
-                <span><el-button size="small" type="text" @click="variationDelete(Id)">删除</el-button></span>
-              <ul style="list-style: none; font-size: smaller">
-                <li><el-checkbox v-model="variation.price">你每个{{variation.name}}的价格都不同</el-checkbox></li>
-                <li><el-checkbox v-model="variation.number">你每个{{variation.name}}的库存都不同</el-checkbox></li>
-                <li><el-checkbox v-model="variation.sku">你每个{{variation.name}}的SKU都不同</el-checkbox></li>
-              </ul>
-            </el-col>
-            <el-col :span="12">
-              <el-row>
-                <el-col :span="2"></el-col>
-                <el-col :span="20">
-                  <el-input v-model.trim="options[Id]"
-                            placeholder="命名属性"
-                            @change="addOption(Id)"
-                            size="small" >
-                    <template #append>
-                      <el-button @click="addOption(Id)">添 加</el-button>
-                    </template>
-                  </el-input>
-                  <div style="margin-top: 5px"></div>
-
-                  <ul style="list-style: none;">
-                    <li v-for="(option, oId) in variation.options" :key="oId">
-                      <el-button size="small">{{option}}</el-button>
-                      <el-button size="small" icon="el-icon-delete" @click="deleteOption(Id, oId)"></el-button>
-                    </li>
-                  </ul>
-
-                </el-col>
-                <el-col :span="2"></el-col>
-              </el-row>
-
-            </el-col>
-          </el-row>
-        </div>
-        <div>
-
-          <el-row>
-            <el-col :span="12">
-              <v-input :messages="['添加一个规格']"></v-input>
-
-                <v-text-field
-                        v-model.trim="variationName"
-                        @click:append="addVariation">
-                  <v-btn slot="append"
-                         color="primary"
-                         small
-                         @click="addVariation">
-                    添 加</v-btn>
-                  <v-icon >mdi-minus</v-icon>
-                </v-text-field>
-            </el-col>
-          </el-row>
-        </div>
+        <sku-select v-model="goods.spec"></sku-select>
       </v-stepper-content>
       <!--4、SKU属性-->
       <v-stepper-content step="4">
@@ -212,13 +165,21 @@
 
 import * as Message from "element-ui";
 import {submitGoods} from "../../../network/item";
+import {loadArticleByUser} from "../../../network/article";
+import SkuSelect from "../info/SkuSelect";
 
 export default {
 
   name: "goodsForm",
+  components: {
+    SkuSelect
+  },
   props: {
     oldGoods: {
-      type: Object
+      type: Object,
+      default() {
+        return null;
+      }
     },
     isEdit: {
       type: Boolean,
@@ -232,40 +193,21 @@ export default {
   data() {
     return {
       valid:false,
+      dialogVisible: false,
+      dialogImageUrl: "",
       myHeaders: { Authorization: window.sessionStorage.getItem('tokenStr') },
-      goods: {
-        title: "", // 标题
-        subTitle: "", //商品卖点
-        article: {
-          id: 1, title: "第一篇"
-        },//文章编号
-        packingList: "",//包装清单
-        description: "",//商品描述
-        afterService: "",//售后服务
-        payMethod: [
-          { id: 1, label: "支付宝"},
-          {id: 2, label: "微信支付"},
-        ], //支付方式
-        skus: [    //商品规格属性
-
-        ],
-        images: [],
-      },
-      articles: [
-        {id: 1, title: "第一篇"},
-        {id: 2, title: "第二篇"},
-        {id: 3, title: "第三篇"},
-        {id: 4, title: "第四篇"},
-      ], //文章列表
+      goods: {},
+      articles: [], //文章列表
       payMethods: [
         {id: 1, label: "支付宝"},
         {id: 2, label: "微信支付"},
         {id: 3, label: "银联"},
       ],
-      variationName: "dfgh",
+      imgList: [],
+      videoList: [],
+
       show: [],
-      variations:[],
-      options: [],
+
       inputSku: {
         image: "", //链接图片
         indexes: "",
@@ -291,15 +233,16 @@ export default {
         images: JSON.stringify(this.goods.images),
         skus: this.goods.skus
       };
-      const skus = {
-
-      };
-      console.log(goods);
-      console.log(this.goods.skus);
-
       submitGoods(goods).then( res => {
         console.log(res);
       })
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning('只能上传一个视频');
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
     },
     handleRemove(file) {
       this.splice(this.goods.images.indexOf(file.name));
@@ -322,43 +265,7 @@ export default {
     uploadError(err, file, fileList) {
       Message.success("上传成功")
     },
-    addVariation() {
-      if (this.variationName == "") {
-        return;
-      }
-      const variation = {
-        name: this.variationName,
-        options: [],
-        price: false,
-        number: false,
-        sku: false,
-        show: true
-      };
-      this.variations.push(variation);
-      this.show.push(false)
-      this.variationName = "";
-    },
-    variationDelete(id) {
-      this.variations.splice(id, 1);
-    },
-    rename(id) {
-      this.variations[id].show = false;
-      this.variations[id].name = "";
-    },
-    renameVariation(id){
-      this.variations[id].show = true;
-    },
-    //添加属性
-    addOption(id) {
-      if (this.variations[id].options.indexOf(this.options[id])==-1){
-        this.variations[id].options.push(this.options[id]);
-      }
-      this.options[id] = "";
-    },
-    //删除属性
-    deleteOption(Id, oId){
-      this.variations[Id].options.splice(oId, 1);
-    },
+
     addSkus() {
       const input = {
         image: "", //链接图片
@@ -400,9 +307,50 @@ export default {
     },
     deleteSku(id) {
       this.goods.skus.splice(id, 1);
+    },
+    loadGoodsInfo() {
+      if (this.isEdit) {
+        this.goods = this.oldGoods;
+        this.goods.payMethod = JSON.parse(this.oldGoods.payMethod);
+
+        //图片
+        this.oldGoods.images.forEach( (img) => {
+          const image = {
+            url: img,
+            name: "",
+          };
+          console.log(image);
+          this.imgList.push(image);
+        });
+        //视频
+        const video = {
+          url: this.goods.video,
+          name: "视频"
+        };
+        this.videoList.push(video);
+        //spec
+        this.goods.spec = JSON.parse(this.oldGoods.spec);
+        console.log(this.oldGoods);
+      }
+      loadArticleByUser().then( res => {
+        res.data.forEach( (a) => {
+          const ar = {
+            id: a.id,
+            label: a.title
+          };
+          console.log(ar);
+          this.articles.push(ar);
+        });
+        console.log("res");
+        console.log(res);
+      })
     }
 
   },
+  mounted() {
+      this.loadGoodsInfo();
+  },
+
   watch: {
     oldGoods: {
       deep: true,

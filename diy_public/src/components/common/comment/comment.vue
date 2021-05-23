@@ -1,5 +1,5 @@
 <template>
-  <div class="comment">
+  <div class="comment"  style="text-align: left">
     <!--评论表单-->
     <!--传递id到下层，并传递页面刷新函数-->
     <b-comment-form :articleId="articleId" @fulshReviewer="getReviewer"/>
@@ -15,7 +15,7 @@
           </Col>
           <Col :xs="20" :sm="21" :md="22">
             <p>
-              <span class="nickName" v-text="item.reviewerUser.nickName"></span>
+              <span class="nickName" v-text="item.reviewerUser.username"></span>
               <small class="time">
                 <Time :time="item.commentTime"/>
               </small>
@@ -32,7 +32,7 @@
             </Row>
             <!--加入元素-->
             <b-reply-form ref="replyForm" v-if="item.id  === activeId" :articleId="articleId" :parentId="item.id"
-                          :tips="tips"/>
+                          @fulshReviewer="getReviewer" :tips="tips"/>
           </Col>
         </Row>
         <!--子评论-->
@@ -46,12 +46,12 @@
               <img class="user-image" width="24" height="24" v-else src="assets/images/avatar.jpg"/>
             </Col>
             <Col :xs="20" :sm="20" :md="21">
-              <span class="nickName" v-text="replyItem.reviewerUser.nickName"></span> &nbsp;&nbsp;回复 &nbsp;&nbsp;
-              <span class="arguedName">@{{replyItem.replyUser.nickName}}</span> <strong>:</strong>
+              <span class="nickName" v-text="replyItem.reviewerUser.username"></span> &nbsp;&nbsp;回复 &nbsp;&nbsp;
+              <span class="arguedName">@{{replyItem.replyUser.username}}</span> <strong>:</strong>
               <span v-html="replyItem.content"></span>
-              <Row class="info" :gutter="20" type="flex" justify="start">
+              <Row class="info" :gutter="20" type="flex" justify="start" style="background-color: white">
                 <Col :md="3" class="bl-cursor">
-                  <span @click="replyClick(replyItem.id,replyItem.reviewerUser.nickName)"><Icon
+                  <span @click="replyClick(replyItem.id,replyItem.reviewerUser.username)"><Icon
                     type="ios-chatboxes-outline" size="14"/>&nbsp;&nbsp;回复</span>
                 </Col>
                 <!--<Col :md="3" class="bl-cursor">-->
@@ -63,7 +63,7 @@
               </Row>
               <!--加入元素-->
               <b-reply-form ref="replyForm" v-if="replyItem.id  === activeId" :articleId="articleId"
-                            :parentId="replyItem.id" :tips="tips"/>
+                            @fulshReviewer="getReviewer" :parentId="replyItem.id" :tips="tips"/>
             </Col>
           </Row>
         </div>
@@ -87,9 +87,9 @@
   import bReplyForm from './replyForm';
   import {selCommentReviewer} from "../../../network/comment";
   export default {
-    props: ["articleId"],
     data() {
       return {
+        articleId: this.$route.params.articleId,
         activeId: '', // 激活
         tips: '', // 子评论提示内容
         reviewer: {
@@ -106,7 +106,13 @@
         reviewerPageFlag: true, // 父评论分页是否显示
       }
     },
-    created() {
+    components: {
+      bPage,
+      bCommentForm,
+      bReplyForm
+    },
+    activated() {
+      this.articleId = this.$route.params.articleId;
       this.getReviewer(this.page);
     },
     methods: {
@@ -115,9 +121,9 @@
         let that = this;
         // 设置当前页面分页不会触发滑动
         if (that.articleId !== undefined) {
-          console.log("zb")
+          console.log(that.activeId);
           selCommentReviewer(
-                  {articleId: "cb6e6cad-bb02-46f6-8640-055473d451d9",
+                  {articleId: this.articleId,
                     page: page,
                     pageSize: this.pageSize
                   }
@@ -135,21 +141,9 @@
             }
 
           });
-   /*       const {data: {code, msg, data: {data: {reply, reviewer}}}} = await that.$axios.get('/comment/selCommentReviewer', {
-            params:{articleId: that.articleId,
-              page: page,
-              pageSize: this.pageSize
-            }
-          });
-          if (code === 200) {
-            that.reviewer.page = reviewer.page;
-            that.reviewer.pageSize = reviewer.pageSize;
-            that.reviewer.total = reviewer.total;
-            that.reviewerPageFlag = reviewer.rows.length > 0; // 若无评论则隐藏评论分页按钮
-            that.reviewer.rows = reviewer.rows;
-            that.reply.rows = reply; // 子评论
-          }*/
+
         }
+        this.activeId = '';
       /*  else {
           const {
             data: {
@@ -187,13 +181,8 @@
       // 子评论全部显示
       replyShowAll(id) { // 获取当前点击父评论id
         this.reply.activeReplyId = id; // 显示全部子评论信息
-      }
+      },
     },
-    components: {
-      bPage,
-      bCommentForm,
-      bReplyForm
-    }
   }
 </script>
 
@@ -239,6 +228,7 @@
       color: #99a2aa;
       line-height: 26px;
       font-size: 12px;
+      background-color: white;
       a {
         color: #99a2aa;
       }

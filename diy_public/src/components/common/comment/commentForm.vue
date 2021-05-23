@@ -11,6 +11,8 @@
 </template>
 
 <script>
+    import {insComment} from "../../../network/comment";
+
     export default {
       props: ["articleId"],
       data(){
@@ -38,16 +40,18 @@
               }
               const cookies = Cookies.get([USER_TOKEN]);
               that.$axios.setHeader(USER_TOKEN, cookies);*/
-              that.$axios.post(`/comment/insComment`,{content:that.$refs[name].model.content,articleId:that.articleId})
-                .then(({data: {code,msg,data}}) => {
-                  if (code === 200){
+              insComment({
+                                  content:that.$refs[name].model.content,
+                                  articleId:that.articleId
+              }).then((res) => {
+                  if (res.code === 200){
                     that.$Message.success("评论发表成功!");
                     that.handleReset(name);
                     that.$emit('fulshReviewer',1); // 页面刷新
                     return
                   }
                   that.$Message.error('评论发表失败!');
-                }).catch(()=>that.$Message.error('axios fail!'))
+                })
             } else {
               that.$Message.error('请确认是否符合填写规则!');
             }

@@ -58,3 +58,9 @@ export function submitArticle(article) {
         }
     })
 }
+
+export function loadArticleByUser() {
+    return request( {
+        url: '/article/uid'
+    })
+}

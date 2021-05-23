@@ -281,7 +281,6 @@ const goodsIt = {
                  },*/
             ]
         }
-
     ],
     skus: [
         {

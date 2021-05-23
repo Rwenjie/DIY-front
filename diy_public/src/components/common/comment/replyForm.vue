@@ -17,6 +17,8 @@
 </template>
 
 <script>
+  import {insComment} from "../../../network/comment";
+
   export default {
     props: ["articleId","parentId","tips"],
     data(){
@@ -44,16 +46,18 @@
             }
             const cookies = Cookies.get([USER_TOKEN]);
             that.$axios.setHeader(USER_TOKEN, cookies);*/
-            that.$axios.post(`/comment/insComment`,{content:that.$refs[name].model.content,articleId:that.articleId,parentId:that.parentId})
-              .then(({data: {code,msg,data}}) => {
-                if (code === 200){
+            insComment({
+              content:that.$refs[name].model.content,
+              articleId:that.articleId,
+              parentId:that.parentId}).then((res) => {
+                if (res.code === 200){
                   that.$Message.success("评论发表成功!");
                   that.handleReset(name);
-                  //that.$emit('fulshReviewer',1); // 页面刷新
+                  that.$emit('fulshReviewer',1); // 页面刷新
                   return
                 }
                 that.$Message.error('评论发表失败!');
-              }).catch(()=>that.$Message.error('axios fail!'))
+              })
           } else {
             that.$Message.error('请确认是否符合填写规则!');
           }
@@ -76,7 +80,7 @@
     border-radius: 4px;
     text-align: center;
     cursor: pointer;
-    background-color: #2d8cf0;
+   /* background-color: #2d8cf0;*/
     border: 1px solid #2d8cf0;
     transition: .1s;
     user-select: none;

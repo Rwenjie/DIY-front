@@ -200,6 +200,7 @@
         // 控制弹窗可见：
         this.show = true;
         // 获取要编辑的goods
+        console.log(oldGoods);
         this.oldGoods = oldGoods;
       },
 
