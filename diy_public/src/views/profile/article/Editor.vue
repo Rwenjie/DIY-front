@@ -56,23 +56,23 @@
                     </el-form-item>
                     <el-form-item label="文章分类">
                         <el-cascader
-                                v-model="article.category_id"
+                                v-model="categoryId"
                                 placeholder="可搜素"
-                                :options="category"
+                                :options="categories"
                                 :props="{ checkStrictly: true }"
                                 clearable
                                 filterable></el-cascader>
                     </el-form-item>
                     <el-form-item label="其他分类">
                         <el-select
-                            v-model="article.sub_category"
+                            v-model="subCategory"
                             multiple
                             filterable
                             allow-create
                             default-first-option
-                            placeholder="请选择文章标签">
+                            placeholder="文章还涉及的分类">
                         <el-option
-                                v-for="item in options"
+                                v-for="item in subCateOption"
                                 :key="item.value"
                                 :label="item.label"
                                 :value="item.value">
@@ -81,14 +81,14 @@
                     </el-form-item>
                     <el-form-item label="文章标签">
                         <el-select
-                            v-model="article.tags"
+                            v-model="tags"
                             multiple
                             filterable
                             allow-create
                             default-first-option
                             placeholder="请选择文章标签">
                             <el-option
-                                v-for="item in options"
+                                v-for="item in tagsOption"
                                 :key="item.value"
                                 :label="item.label"
                                 :value="item.value">
@@ -114,9 +114,17 @@
 
 <script>
     import {submitArticle} from "../../../network/article";
+    import {getAllCate, getAllTags, getCategories} from "../../../network/common";
+    import {getTreeData} from "../../../utils/utils";
+    import {mapGetters} from "vuex";
 
     export default {
         name: "Editor",
+        computed:{
+            ...mapGetters({
+                categories: 'categories'
+            })
+        },
         data() {
             return {
                 imgDisable: false,
@@ -124,59 +132,21 @@
                 article: {
                     title: "",
                     text: "",
-                    category_id: "",
-                    sub_category: [
-
-                    ],
+                    categoryId: "",
+                    subCategory: "",
                     image: "",
                     tags: "",
                     brief: "",
                 },
+                tags: [],
+                subCategory: [],
                 imageDialogVisible: false,
                 dialogImageUrl: "",
                 dialogVisible: false,
-                options: [{
-                    value: 'HTML',
-                    label: 'HTML'
-                }, {
-                    value: 'CSS',
-                    label: 'CSS'
-                }, {
-                    value: 'JavaScript',
-                    label: 'JavaScript'
-                }],
-                value: [],
-                types: [{
-                    value: '原创',
-                    label: '原创'
-                }, {
-                    value: '转载',
-                    label: '转载'
-                }, {
-                    value: '翻译',
-                    label: '翻译'
-                }],
-                category:  [{
-                    value: 'zhinan',
-                    label: '指南',
-                    children: [{
-                        value: 'shejiyuanze',
-                        label: '设计原则',
-                        children: [{
-                            value: 'yizhi',
-                            label: '一致'
-                        }, {
-                            value: 'fankui',
-                            label: '反馈'
-                        }, {
-                            value: 'xiaolv',
-                            label: '效率'
-                        }, {
-                            value: 'kekong',
-                            label: '可控'
-                        }]
-                    }],
-                }]
+                subCateOption: [],
+                tagsOption: [],
+                categoryId: [],
+
             }
         },
         methods: {
@@ -195,12 +165,52 @@
                 alert("只能上一张图片,请慎重考虑")
             },
             submitArticle() {
-                submitArticle(this.article).then( res => {
-                   this.article = {};
-                })
-                this.dialogVisible = false;
 
+                this.article.tags = "";
+                this.tags.forEach( (tag) => {
+                    this.article.tags += (tag+',')
+                });
+                this.article.subCategory = "",
+                this.subCategory.forEach( (cat) => {
+                    this.article.subCategory += (cat+',')
+                });
+                this.article.categoryId = this.categoryId[0];
+                submitArticle(this.article).then( res => {
+                   /*this.article = {};*/
+                });
+                this.dialogVisible = false;
+            },
+            loadCategory() {
+                getAllCate().then( res => {
+                    res.data.forEach( (category) => {
+                        const option = {
+                            value: category.id,
+                            label: category.name
+                        };
+                        this.subCateOption.push(option);
+                    })
+                });
+                getCategories().then( res => {
+                    console.log("category==>");
+                    console.log(res);
+                    this.category = getTreeData(res.data);
+                })
+            },
+            loadTags() {
+                getAllTags().then( res => {
+                    res.data.forEach( (tag) => {
+                        const option = {
+                            value: tag.id,
+                            label: tag.label
+                        };
+                        this.tagsOption.push(option);
+                    })
+                })
             }
+        },
+        mounted() {
+            this.loadCategory();
+            this.loadTags();
         }
     }
 </script>

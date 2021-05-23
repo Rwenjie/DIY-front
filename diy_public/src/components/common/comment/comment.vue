@@ -11,7 +11,7 @@
           <Col :xs="4" :sm="3" :md="2" class="bl-text-center">
             <img class="user-image" width="48" height="48" v-if="item.reviewerUser.avatar"
                  :src="serverUrl + item.reviewerUser.avatar"/>
-            <img class="user-image" width="48" height="48" v-else src="../../assets/images/avatar.png"/>
+            <img class="user-image" width="48" height="48" v-else src="assets/images/avatar.jpg"/>
           </Col>
           <Col :xs="20" :sm="21" :md="22">
             <p>
@@ -43,7 +43,7 @@
             <Col :xs="2" :sm="2" :md="1" offset="2">
               <img class="user-image" width="24" height="24" v-if="replyItem.reviewerUser.avatar"
                    :src="serverUrl + replyItem.reviewerUser.avatar"/>
-              <img class="user-image" width="24" height="24" v-else src="../../assets/images/avatar.png"/>
+              <img class="user-image" width="24" height="24" v-else src="assets/images/avatar.jpg"/>
             </Col>
             <Col :xs="20" :sm="20" :md="21">
               <span class="nickName" v-text="replyItem.reviewerUser.nickName"></span> &nbsp;&nbsp;回复 &nbsp;&nbsp;
@@ -85,6 +85,7 @@
   import bPage from './page';
   import bCommentForm from './commentForm';
   import bReplyForm from './replyForm';
+  import {selCommentReviewer} from "../../../network/comment";
   export default {
     props: ["articleId"],
     data() {
@@ -114,8 +115,31 @@
         let that = this;
         // 设置当前页面分页不会触发滑动
         if (that.articleId !== undefined) {
-          const {data: {code, msg, data: {data: {reply, reviewer}}}} = await that.$axios.get('/comment/selCommentReviewer', {
-            params: {articleId: that.articleId, page: page, pageSize: this.pageSize}
+          console.log("zb")
+          selCommentReviewer(
+                  {articleId: "cb6e6cad-bb02-46f6-8640-055473d451d9",
+                    page: page,
+                    pageSize: this.pageSize
+                  }
+          ).then( res => {
+            console.log(res);
+            if (res.code == 200 ) {
+              const reply = res.data.data.reply;
+              const reviewer = res.data.data.reviewer;
+              that.reviewer.page = reviewer.page;
+              that.reviewer.pageSize = reviewer.pageSize;
+              that.reviewer.total = reviewer.total;
+              that.reviewerPageFlag = reviewer.rows.length > 0; // 若无评论则隐藏评论分页按钮
+              that.reviewer.rows = reviewer.rows;
+              that.reply.rows = reply; // 子评论
+            }
+
+          });
+   /*       const {data: {code, msg, data: {data: {reply, reviewer}}}} = await that.$axios.get('/comment/selCommentReviewer', {
+            params:{articleId: that.articleId,
+              page: page,
+              pageSize: this.pageSize
+            }
           });
           if (code === 200) {
             that.reviewer.page = reviewer.page;
@@ -124,9 +148,20 @@
             that.reviewerPageFlag = reviewer.rows.length > 0; // 若无评论则隐藏评论分页按钮
             that.reviewer.rows = reviewer.rows;
             that.reply.rows = reply; // 子评论
-          }
-        } else {
-          const {data: {code, msg, data: {data: {reply, reviewer}}}} = await that.$axios.get('/comment/selWebSiteCommentReviewer', {
+          }*/
+        }
+      /*  else {
+          const {
+            data: {
+              code,
+              msg,
+              data: {
+                data: {
+                  reply, reviewer
+                }
+              }
+            }
+          } = await that.$axios.get('/comment/selWebSiteCommentReviewer', {
             params: {page: page, pageSize: this.pageSize}
           });
           if (code === 200) {
@@ -137,7 +172,7 @@
             that.reviewer.rows = reviewer.rows;
             that.reply.rows = reply; // 子评论
           }
-        }
+        }*/
       },
       // 父评论分页获取下页内容
       getReviewerPage(page) {

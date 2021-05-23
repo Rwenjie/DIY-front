@@ -16,6 +16,7 @@ MyComponent.install = function (Vue) {
   Vue.component("vEditor", () => import('./editor/Editor'));
   Vue.component("rEditor", () => import('./editor/REditor'));
   Vue.component("rSlideshow", () => import('./slideshow/Slideshow'));
+  Vue.component("rComment", () => import('./comment/comment'))
   Vue.prototype.$message = m;
   Vue.prototype.$format = function (val) {
     if(typeof val === 'string'){

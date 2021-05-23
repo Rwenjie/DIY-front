@@ -17,8 +17,6 @@
 </template>
 
 <script>
-  import Cookies from 'js-cookie';
-  import {USER_TOKEN} from '../../utils/constant';
   export default {
     props: ["articleId","parentId","tips"],
     data(){
@@ -40,12 +38,12 @@
         let that = this;
         that.$refs[name].validate((valid) => {
           if (valid) {
-            if (!Cookies.get([USER_TOKEN])) {
+            /*if (!Cookies.get([USER_TOKEN])) {
               that.$Message.warning('您还未登录,暂时无法评论!');
               return
             }
             const cookies = Cookies.get([USER_TOKEN]);
-            that.$axios.setHeader(USER_TOKEN, cookies);
+            that.$axios.setHeader(USER_TOKEN, cookies);*/
             that.$axios.post(`/comment/insComment`,{content:that.$refs[name].model.content,articleId:that.articleId,parentId:that.parentId})
               .then(({data: {code,msg,data}}) => {
                 if (code === 200){

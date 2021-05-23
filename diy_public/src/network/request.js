@@ -27,20 +27,18 @@ export function request(config) {
   //响应拦截器
   instance.interceptors.response.use(success => {
     //业务逻辑错误
-    console.log("success=>", success);
     if (success.status && success.status == 200) {
       if (success.data.code == 500 || success.data.code == 401 || success.data.code == 403) {
         Message({message: success.data.message, type: 'error'});
         return;
       }
       if (success.data.message) {
-        Message({message: success.data.message, type: 'success'});
+        //Message({message: success.data.message, type: 'success'});
 
       }
     }
     return success.data;
   }, error => {
-    console.log("error=>", error);
     if (error.response.code == 504 || error.response.code == 404) {
       Message({message: '服务器被吃了o(╯□╰)o', type: 'error'});
     } else if (error.response.code == 403) {

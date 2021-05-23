@@ -19,10 +19,28 @@
                         <div style="margin-bottom: 5px">上一篇</div>
                         <div style="margin-bottom: 5px">编码字母-让我们成为侦探</div>-->
 
+
                         <div style="padding-top: 30px">
-                            <el-breadcrumb separator-class="el-icon-arrow-right">
+                            <div style="text-align: left; width: 40px; float: left">
+                                <a href="javascript:void(0)" @click="goAnchor('production')">
+
+                                    <el-tooltip v-if="article.sell==1" class="item" effect="dark" content="直接去购买" placement="top">
+                                        <v-btn icon>
+                                            <v-icon>mdi-basket-fill</v-icon>
+                                        </v-btn>
+                                    </el-tooltip>
+                                    <el-tooltip v-else class="item" effect="dark" content="该DIY暂时没有商品出售" placement="top">
+                                        <v-btn icon>
+                                            <v-icon>mdi-basket-fill</v-icon>
+                                        </v-btn>
+                                    </el-tooltip>
+
+                                </a>
+                            </div>
+                            <el-breadcrumb separator-class="el-icon-arrow-right" style="margin-top: 10px">
                                 <el-breadcrumb-item v-for="ca in categoryPath">{{ca.label}}</el-breadcrumb-item>
                             </el-breadcrumb>
+
                         </div>
                         <div style="max-width: 950px;
                                         margin: 20px auto 20px auto;">
@@ -62,27 +80,26 @@
                                                 </div>
                                             </el-col>
                                             <el-col :span="12">
-                                                <row>
-                                                    <ul style="list-style-type: none;">
+                                                <div>
+                                                    <ul style="list-style-type: none; float: right">
                                                         <li v-for="tag in tags"
                                                             style="display:inline;
-                                                                    float: right;
                                                                     margin: 0 0 5px 5px">
                                                             <el-tag size="small"
-                                                                    :key="tag"
-                                                                    style="">{{tag}}</el-tag>
+                                                                    :key="tag.id"
+                                                                    style="">{{tag.label}}</el-tag>
                                                         </li>
                                                     </ul>
-                                                </row>
+                                                </div>
                                                 <div>
                                                     <ul style="list-style-type: none">
                                                         <li v-for="category in categories"
-                                                            style="display: block;
+                                                            style="display: inline;
                                                                     float: right;
                                                                     margin: 0 0 5px 5px">
                                                             <el-tag size="small"
                                                                     type="warning"
-                                                                    :key="category"style="">{{category}}</el-tag>
+                                                                    :key="category.id"style="">{{category.name}}</el-tag>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -90,18 +107,6 @@
                                         </el-row>
                                     </div>
                                     <div class="post-content">
-                                      <!--  <p style="text-align: center;"><strong>Watch video:</strong></p>
-                                        <p style="text-align: center;">
-                                            <iframe width="560" height="315" src="https://www.youtube.com/embed/C9U419Htbmc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br>
-
-
-
-                                               <strong>How to make:</strong></p>
-                                        <p style="text-align: center;"><img class="aligncenter size-full wp-image-68531" src="http://krokotak.com/wp-content/uploads/2017/09/2-13.jpg" alt="" width="595" height="1276" srcset="http://krokotak.com/wp-content/uploads/2017/09/2-13.jpg 595w, http://krokotak.com/wp-content/uploads/2017/09/2-13-140x300.jpg 140w, http://krokotak.com/wp-content/uploads/2017/09/2-13-477x1024.jpg 477w, http://krokotak.com/wp-content/uploads/2017/09/2-13-173x372.jpg 173w, http://krokotak.com/wp-content/uploads/2017/09/2-13-269x576.jpg 269w, http://krokotak.com/wp-content/uploads/2017/09/2-13-326x700.jpg 326w" sizes="(max-width: 595px) 100vw, 595px"></p>
-                                        <p style="text-align: center;">&nbsp;printable templates:</p>
-                                        <p><a href="http://print.krokotak.com/p?x=05bfe34161c64292924bc6ca437a267f"><img class="wp-image-68536 size-medium alignleft" src="http://krokotak.com/wp-content/uploads/2017/09/pum-212x300.jpg" alt="" width="212" height="300" srcset="http://krokotak.com/wp-content/uploads/2017/09/pum-212x300.jpg 212w, http://krokotak.com/wp-content/uploads/2017/09/pum-263x372.jpg 263w, http://krokotak.com/wp-content/uploads/2017/09/pum.jpg 271w" sizes="(max-width: 212px) 100vw, 212px"></a></p>
-                                        <p style="text-align: center;"><a href="http://print.krokotak.com/p?x=b1348c74aa274e1ba125be565a257e15"><img class="wp-image-68537 size-medium alignleft" src="http://krokotak.com/wp-content/uploads/2017/09/sk-212x300.jpg" alt="" width="212" height="300" srcset="http://krokotak.com/wp-content/uploads/2017/09/sk-212x300.jpg 212w, http://krokotak.com/wp-content/uploads/2017/09/sk-263x372.jpg 263w, http://krokotak.com/wp-content/uploads/2017/09/sk.jpg 271w" sizes="(max-width: 212px) 100vw, 212px"></a></p>
-                                   -->
                                     <div style="text-align: left" v-html=article.text>
                                     </div>
                                     </div>
@@ -109,7 +114,10 @@
                             </v-sheet>
                         </div>
 
-                        <div style="max-width: 950px;
+                        <div v-if="article.sell==1" class="production-box" id="production">
+                            <span class="item-name"></span>
+                        </div>
+                        <div v-if="article.sell==1" style="max-width: 950px;
                                         margin: 20px auto 20px auto;">
                             <div style="text-align: left">
                                 <h3>推荐购买</h3>
@@ -144,6 +152,7 @@
                                     width="100%"
                                     style="padding: 5px 0 10px 5px">
                                 <el-row style="padding: 50px">
+                                    <r-comment :articleId="articleId"></r-comment>
                                     <!--<review :dataList="dataList"></review>-->
                                     <!--<r-comment :articleId="cb6e6cad-bb02-46f6-8640-055473d451d9"></r-comment>-->
                                 </el-row>
@@ -172,10 +181,8 @@
     import PopularPosts from "./childComps/PopularPosts";
     import Review from "components/content/review/Review";
     import CategoryNav from "components/content/categoryNav/CategoryNav";
-  /*  import RComment from "components/common/comment/comment.vue"*/
-    import goodsItem from './data'
     import {cancelStar, getArticleById, getStar, getStarState} from "../../network/article";
-    import {getAllCategory} from "../../network/common";
+    import {getAllCategory, getTagById, getCategoryById} from "../../network/common";
 
     export default {
         name: "Article",
@@ -269,8 +276,8 @@
                 ],
                 starStatus: false,
                 star: 199,
-                tags: ["halloween","hand","pumpkin","skeleton","hand","pumpkin","skeleton"],
-                categories:["With hands and feet", "paper toys", "halloween", "educational activities", "back to school"],
+                tags: [],
+                categories:[],
                 goods: [],
                 categoryPath: [],
                 articleId: this.$route.params.articleId,
@@ -296,16 +303,44 @@
                     this.starStatus = res.data;
                 })
             },
+            loadtagList(){
+                if (this.article.tags!="") {
+                    let tagList= this.article.tags.split(',');
+                    tagList.forEach( (tag) => {
+                        if (tag!=""){
+                            getTagById(tag).then( res => {
+                                this.tags.push(res.data)
+                            })
+                        }
+
+                    });
+                }
+            },
+            subCategory(){
+                if (this.article.subCategory!=""){
+                    let cateList = this.article.subCategory.split(',');
+                    console.log(cateList);
+                    cateList.forEach( (cate) => {
+                        if (cate!="") {
+                            getCategoryById(cate).then( res => {
+                                this.categories.push(res.data);
+                            })
+                        }
+
+                    })
+                }
+            },
             loadArticleInfo() {
-                console.log(this.articleId);
                 getArticleById(this.articleId).then( res => {
                     this.article = res.data;
                     //获得文章的分类信息
                     this.loadCategory(res.data.categoryId);
                     //获得用户是否star该文章
                     this.getStarState();
+                    this.loadtagList();
+                    this.subCategory();
 
-                })
+                });
             },
             loadGoodsInfo() {
 
@@ -315,6 +350,15 @@
                     this.categoryPath = res.data;
                 })
             },
+            goAnchor(id) {
+                var anchor = document.getElementById(id);
+                // chrome
+                document.body.scrollTop = anchor.offsetTop;
+                // firefox
+                document.documentElement.scrollTop = anchor.offsetTop;
+                // safari
+                window.pageYOffset = anchor.offsetTop;
+            }
         },
         mounted() {
             this.loadArticleInfo();
