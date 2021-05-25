@@ -37,7 +37,7 @@
             //读取图片
             loadImage() {
                 this.getColNumbers()
-                for (let i = 0; i < 17; i++) {
+                /*for (let i = 0; i < 17; i++) {
                     let colIndex = i % this.colNumbers
                     let url = require(`@/assets/images/${i}.jpg`)
                     if (this.imgList[colIndex]) {
@@ -45,7 +45,7 @@
                     } else {
                         this.$set(this.imgList, colIndex, [url])
                     }
-                }
+                }*/
             },
             resize() {
                 this.imgList = [];

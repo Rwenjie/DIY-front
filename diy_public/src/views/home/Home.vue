@@ -72,7 +72,7 @@
                 this.getColNumbers()
                 for (let i = 0; i < 12; i++) {
                     let colIndex = i % this.colNumbers
-                    let url = require(`@/assets/images/${i}.jpg`)
+                    //let url = require(`@/assets/images/${i}.jpg`)
                     if (this.imgList[colIndex]) {
                         this.imgList[colIndex].push(url)
                     } else {

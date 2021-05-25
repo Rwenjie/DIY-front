@@ -38,7 +38,7 @@
                                 </a>
                             </div>
                             <el-breadcrumb separator-class="el-icon-arrow-right" style="margin-top: 10px">
-                                <el-breadcrumb-item v-for="ca in categoryPath">{{ca.label}}</el-breadcrumb-item>
+                                <el-breadcrumb-item v-for="(ca, id) in categoryPath" :key="id">{{ca.label}}</el-breadcrumb-item>
                             </el-breadcrumb>
 
                         </div>
@@ -131,7 +131,8 @@
                                     style="padding: 5px 0 10px 5px">
                                 <el-row style="margin-top: 5px">
                                     <el-col :span="12">
-                                        <test></test>
+                                        <!--<test></test>-->
+                                        <image-video-swipe></image-video-swipe>
                                     </el-col>
                                     <el-col :span="12">
                                         <goods-detail :goods-item="goods"></goods-detail>
@@ -180,6 +181,7 @@
     import GoodsDetail from "./childComps/GoodsDetail";
     import PopularPosts from "./childComps/PopularPosts";
     import Review from "components/content/review/Review";
+    import ImageVideoSwipe from "./childComps/ImageVideoSwipe";
     import CategoryNav from "components/content/categoryNav/CategoryNav";
     import {cancelStar, getArticleById, getStar, getStarState} from "../../network/article";
     import {getAllCategory, getTagById, getCategoryById} from "../../network/common";
@@ -190,6 +192,7 @@
            /* ArticleSwiper,
 
             VideoPlayTest*/
+            ImageVideoSwipe,
             Test,
             GoodsDetail,
             Review,

@@ -12,8 +12,7 @@
                 class="small-box"
                 @mouseover="smallBoxOver"
                 @mousemove="smallBoxMove($event)"
-                @mouseleave="smallLeave"
-        >
+                @mouseleave="smallLeave">
 
             <div v-show="isShowVideo">
                 <video-player

@@ -13,8 +13,9 @@ import './plugins/video-playe'
 import './plugins/vuetify'
 import './plugins/area-linkage'
 
-
 Vue.use(waterfall);
+import './plugins/vant.js'
+
 
 Vue.config.productionTip = false
 

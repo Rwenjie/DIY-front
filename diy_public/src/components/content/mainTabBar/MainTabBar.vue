@@ -3,7 +3,7 @@
     <el-row :gutter="40">
       <el-col :span="4">
         <div class="logo" @click="clickToPage('/home')">
-          <img src="https://rwenjie-blog.oss-cn-hangzhou.aliyuncs.com/div/logo/diylogo.png" alt="">
+          <img src="https://rwenjie-blog.oss-cn-hangzhou.aliyuncs.com/diy-shop/diy_logo.jpg">
         </div>
       </el-col>
       <el-col :span="20">

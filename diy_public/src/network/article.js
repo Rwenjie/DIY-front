@@ -59,8 +59,8 @@ export function submitArticle(article) {
     })
 }
 
-export function loadArticleByUser() {
+export function publicGoodArticle() {
     return request( {
-        url: '/article/uid'
+        url: '/article/goods/uid'
     })
 }

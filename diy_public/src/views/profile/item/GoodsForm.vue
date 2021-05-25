@@ -16,9 +16,10 @@
           <v-form v-model="valid" ref="basic">
             <v-row style="margin-top: 15px">
               <v-col cols="6">
+                <!--:hint="`${goods.article.id}, ${goods.article.label}`"-->
                 <v-select
                         v-model="goods.article"
-                        :hint="`${goods.article.id}, ${goods.article.label}`"
+
                         :items="articles"
                         item-text="label"
                         item-value="id"
@@ -28,9 +29,9 @@
                 ></v-select>
               </v-col>
               <v-col cols="6">
+                <!--:hint="`${goods.payMethod.id}, ${goods.payMethod.label}`"-->
                 <v-select
                         v-model="goods.payMethod"
-                        :hint="`${goods.payMethod.id}, ${goods.payMethod.label}`"
                         :items="payMethods"
                         attach
                         chips
@@ -39,6 +40,13 @@
                         label="pay"
                         multiple
                 ></v-select>
+              </v-col>
+              <v-col>
+                <div style="text-align: left;margin-bottom: 15px">
+                  <span>发货地址</span>
+                  <area-select v-model="fromAddr" value="toAddr" type="code" :data="$pcaa" :level="2"></area-select>
+                </div>
+
               </v-col>
             </v-row>
             <v-text-field label="商品标题" v-model="goods.title" :maxlength="25" required :rules="[v => !!v || '商品标题不能为空']" />
@@ -61,11 +69,9 @@
                     multiple
                     :headers="myHeaders"
                     :file-list="imgList"
-                    :on-preview="handlePreview"
-                    :on-success="uploadSuccess"
-                    :on-error="uploadError"
+                    :on-success="imageUploadSuccess"
                     :before-remove="beforeRemove"
-                    :on-remove="handleRemove">
+                    :on-remove="imageHandleRemove">
               <i class="el-icon-plus"></i>
 <!--              <template #default>-->
 <!--                <i class="el-icon-plus"></i>-->
@@ -79,12 +85,13 @@
           <h4><p>视频上传</p></h4>
           <el-upload
                   class="upload-demo"
-                  action="https://jsonplaceholder.typicode.com/posts/"
-                  :on-preview="handlePreview"
+                  action="/api/file/import"
                   :on-remove="handleRemove"
                   :before-remove="beforeRemove"
                   multiple
+                  :headers="myHeaders"
                   :limit="1"
+                  :on-success="videoUploadSuccess"
                   :on-exceed="handleExceed"
                   :file-list="videoList">
             <el-button size="small" type="primary">点击上传</el-button>
@@ -99,7 +106,7 @@
      <!-- 3、规格参数-->
       <v-stepper-content step="3">
         <p style="text-align:left">列出您提供的所有规格。买家将按在这里的顺序看到它们。</p>
-        <sku-select v-model="goods.spec"></sku-select>
+        <sku-select v-model="stepSpec" :spec="goods.spec"></sku-select>
       </v-stepper-content>
       <!--4、SKU属性-->
       <v-stepper-content step="4">
@@ -107,9 +114,8 @@
           <template v-slot:default>
             <thead>
             <tr>
-              <th class="text-left" v-for="(item, id) in variations" :key="id">{{item.name}}</th>
+              <th class="text-left" v-for="(item, id) in stepSpec" :key="id">{{item.label}}</th>
               <th class="text-left">标题</th>
-              <th class="text-left">绑定图片</th>
               <th class="text-left">价格</th>
               <th class="text-left">数量</th>
             </tr>
@@ -117,9 +123,8 @@
             <tbody>
             <!--显示数据-->
             <tr v-for="(sku, id) in goods.skus" :key="id">
-              <td v-for="(option, oId) in sku.options" :key="oId">{{ option }}</td>
+              <td v-for="(spec, oId) in stepSpec" :key="oId">{{spec.option[sku.indexes[oId]].alt}}</td>
               <td>{{sku.title}}</td>
-              <td>{{sku.image}}</td>
               <td>{{sku.price}}</td>
               <td>{{sku.stock}}</td>
               <td>
@@ -128,18 +133,19 @@
             </tr>
             <!--添加数据-->
             <tr>
-              <td v-for="(item, id) in variations" :key="id">
-                <v-select
-                        v-model="inputSku.options[id]"
-                        :items="item.options"></v-select>
+              <td v-for="(item, id) in stepSpec" :key="id">
+                <v-select v-model="inputSku.options[id]"
+                          :hint="`${item.option[0].alt}, ${item.option[0].id}`"
+                        :items="item.option"
+                        item-text="alt"
+                        item-value="id"
+                        :label="item.label"
+                        persistent-hint
+                        return-object
+                ></v-select>
               </td>
               <td>
                 <v-text-field v-model="inputSku.title"></v-text-field>
-              </td>
-              <td>
-                <v-select
-                        v-model="inputSku.image">
-                </v-select>
               </td>
               <td>
                 <v-text-field v-model="inputSku.price"></v-text-field>
@@ -165,8 +171,9 @@
 
 import * as Message from "element-ui";
 import {submitGoods} from "../../../network/item";
-import {loadArticleByUser} from "../../../network/article";
-import SkuSelect from "../info/SkuSelect";
+import {publicGoodArticle} from "../../../network/article";
+import SkuSelect from "./SkuSelect";
+import Vue from 'vue'
 
 export default {
 
@@ -192,11 +199,19 @@ export default {
   },
   data() {
     return {
+      fromAddr: [], //发货地址
       valid:false,
       dialogVisible: false,
       dialogImageUrl: "",
       myHeaders: { Authorization: window.sessionStorage.getItem('tokenStr') },
-      goods: {},
+      goods: {
+        title: "",
+        skus: [],
+        images: [],
+        video: "",
+
+      },
+      stepSpec: {},
       articles: [], //文章列表
       payMethods: [
         {id: 1, label: "支付宝"},
@@ -205,12 +220,9 @@ export default {
       ],
       imgList: [],
       videoList: [],
-
-      show: [],
-
       inputSku: {
         image: "", //链接图片
-        indexes: "",
+        indexes: [],
         price: 0,
         stock: 0,
         ownSpec: "",
@@ -221,6 +233,21 @@ export default {
   },
   methods: {
     submit() {
+      this.goods.skus.forEach( (sku) => {
+        /*if (sku.indexes.length > 0) {
+          let index = sku.indexes[0];
+          for (let i=1; i<sku.indexes.length; i++) {
+            index += '_';
+            index += sku.indexes[i];
+          }
+          sku.indexes = index;
+        }
+        sku.indexes = JSON.stringify(sku.indexes);*/
+        delete sku.options;
+      });
+      this.stepSpec.forEach( (spec) => {
+        spec.option.disabled = true;
+      });
 
       const goods = {
         title: this.goods.title, // 标题
@@ -228,11 +255,16 @@ export default {
         article: this.goods.article,
         packingList: this.goods.packingList,//包装清单
         description: this.goods.description,//商品描述
-        afterService: this.goods.afterService,//售后服务
+        afterService: this.isEdit ? this.goods.afterService : this.goods.afterService.split(','),//售后服务
         payMethod: JSON.stringify(this.goods.payMethod),
-        images: JSON.stringify(this.goods.images),
-        skus: this.goods.skus
+        images: this.goods.images,
+        skus: this.goods.skus,
+        fromAddr: this.fromAddr[2],
+        video: this.goods.video,
+        spec: JSON.stringify(this.stepSpec),
       };
+      console.log("goods");
+      console.log(goods);
       submitGoods(goods).then( res => {
         console.log(res);
       })
@@ -244,7 +276,7 @@ export default {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
     },
-    handleRemove(file) {
+    imageHandleRemove(file) {
       this.splice(this.goods.images.indexOf(file.name));
       //这里应该做后台删除
       console.log(this.goods);
@@ -252,8 +284,8 @@ export default {
     beforeRemove(file) {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
-    uploadSuccess(res, file) {
-      const image = {name: file.name, url: res.data}
+    imageUploadSuccess(res, file) {
+      const image = {name: file.name, url: res.data};
       this.goods.images.push(image.url);
       //this.$bus.$emit("imageUrls", this.imageUrl);
       //将照片信息保存到Vuex
@@ -262,57 +294,51 @@ export default {
       });*/
       console.log(this.goods);
     },
-    uploadError(err, file, fileList) {
-      Message.success("上传成功")
+    videoUploadSuccess(res, file) {
+      this.goods.video = res.data;
     },
 
     addSkus() {
-      const input = {
-        image: "", //链接图片
-        indexes: "",
-        price: 0,
-        stock: 0,
-        ownSpec: "",
-        title: "",
-        options: []
-      };
-      let ownSpec = '{';
-      for (let i=0; i<this.options.length; i++) {
-        ownSpec = ownSpec + " \"" + this.variations[i].name + "\":\"" +this.options[i] + "\"";
-        if (i+1<this.options.length){
-          ownSpec = ownSpec + ',';
+      console.log(this.inputSku);
+      //拼接indexes
+   /*   if (this.inputSku.options.length > 0) {
+        this.inputSku.indexes = this.inputSku.options[0].id;
+        for (let i=1; i<this.inputSku.options.length; i++) {
+          this.inputSku.indexes += '_';
+          this.inputSku.indexes += this.inputSku.options[i].id;
         }
+      }*/
+      this.inputSku.options.forEach( (op) => {
+        this.inputSku.indexes.push(op.id);
+      });
+      //拼接ownSpec
+      let ownSpec = "{";
+      for(let i = 0; i < this.stepSpec.length; i++) {
+        console.log("i" + i);
+        console.log(this.inputSku.options);
+        ownSpec += '\"'+this.stepSpec[i].label+'\" : ';
+        ownSpec += '\"'+this.inputSku.options[i].alt+'\",';
       }
-      ownSpec = ownSpec + '}';
+      ownSpec += "}";
       this.inputSku.ownSpec = ownSpec;
 
-      let indexes = "";
-      const options = this.inputSku.options;
-      for (let i=0; i<options.length; i++) {
-        const option = options[i]
-        let index = this.variations[i].options.indexOf(option);
-        indexes = indexes + index +"";
-        if (i+1<options.length){
-          indexes = indexes + '_';
-        }
-      }
-      this.inputSku.indexes = indexes;
-      if (indexes=="") {
-        this.inputSku = input;
-        return;
-      }
-      this.goods.skus.push(this.inputSku);
-      this.inputSku = input;
-      console.log("skus=>"+this.goods.skus);
+      this.goods.skus.push(JSON.parse(JSON.stringify(this.inputSku)));
+
+      //初始化参数
+      this.inputSku.ownSpec = "";
+      this.inputSku.indexes = [];
+      this.inputSku.price = "";
+      this.inputSku.options = [];
+      this.inputSku.title = "";
+      this.inputSku.stock = "";
     },
     deleteSku(id) {
       this.goods.skus.splice(id, 1);
     },
-    loadGoodsInfo() {
+    loadOldGoodsInfo() {
       if (this.isEdit) {
         this.goods = this.oldGoods;
         this.goods.payMethod = JSON.parse(this.oldGoods.payMethod);
-
         //图片
         this.oldGoods.images.forEach( (img) => {
           const image = {
@@ -331,8 +357,13 @@ export default {
         //spec
         this.goods.spec = JSON.parse(this.oldGoods.spec);
         console.log(this.oldGoods);
+      } else {
+        this.goods = {};
+        this.stepSpec = {};
       }
-      loadArticleByUser().then( res => {
+    },
+    loadInfo() {
+      publicGoodArticle().then( res => {
         res.data.forEach( (a) => {
           const ar = {
             id: a.id,
@@ -348,48 +379,28 @@ export default {
 
   },
   mounted() {
-      this.loadGoodsInfo();
+    this.loadInfo();
   },
+
 
   watch: {
     oldGoods: {
       deep: true,
-      handler(val) {
-        if (!this.isEdit) {
-          Object.assign(this.goods, {
-            categories: null, // 商品分类信息
-            brandId: 0, // 品牌id信息
-            title: "", // 标题
-            subTitle: "", // 子标题
-            spuDetail: {
-              packingList: "", // 包装列表
-              afterService: "", // 售后服务
-              description: "" // 商品描述
-            }
-          });
-          this.specs = [];
-          this.specialSpecs = [];
-        } else {
-          this.goods = Object.deepCopy(val);
-
-          // 先得到分类名称
-          const names = val.cname.split("/");
-          // 组织商品分类数据
-          this.goods.categories = [
-            { id: val.cid1, name: names[0] },
-            { id: val.cid2, name: names[1] },
-            { id: val.cid3, name: names[2] }
-          ];
-
-          // 将skus处理成map
-          const skuMap = new Map();
-          this.goods.skus.forEach(s => {
-            skuMap.set(s.indexes, s);
-          });
-          this.goods.skus = skuMap;
-        }
+      handler() {
+        this.loadOldGoodsInfo();
       }
     },
+    inputSku: {
+      deep: true,
+      handler(){
+        let title = "";
+        this.inputSku.options.forEach( (op) => {
+          title += op.alt;
+          title += " ";
+        });
+        this.inputSku.title = title;
+      }
+    }
 
   },
   computed: {
