@@ -11,44 +11,57 @@
     <div id="image-swipe">
 
         <div class="block">
-            <el-carousel height="500px"
+            <el-carousel height="350px"
+                         ref="imagSwipe"
                          style="width: 100%; height: auto"
-                         loop="false"
+                         :loop=false
+                         :autoplay="autoplay"
+                         v-on:change="ImageChange"
                          indicator-position="none">
-                <div style="z-index: 999">
-                    <el-button >
-                        按钮
-                    </el-button>
+                <div style=" margin: auto 0">
+                    <video-player v-show="videoShow"  class="video-player-box"
+                                  ref="videoPlayer"
+                                  :options="playerOptions"
+                                  :playsinline="playsinline"
+                                  customEventName="customstatechangedeventname"
+                                  @play="onPlayerPlay($event)"
+                                  @pause="onPlayerPause($event)"
+                    >
+                    </video-player>
                 </div>
-                <div style="z-index: 500">
-                    <video class="lib-video" loop="" preload="undefined" webkit-playsinline="webkit-playsinline" playsinline="playsinline" poster="https://img.alicdn.com/imgextra/i1/133668489/O1CN011geBmL2Ca0pHePksg_!!133668489-0-tbvideo.jpg_600x600.jpg" data-spm-anchor-id="a220o.1000855.1997427645.i7.440e3fcaq7hjYR">
-                        <source src="https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm">
-                    </video>
+                <div v-show="!videoShow" style="position:absolute; left:5px; top:300px; z-index: 999">
+                    <v-btn icon large @click="videoPlay">
+                        <v-icon>mdi-motion-play-outline</v-icon>
+                    </v-btn>
                 </div>
-
-
-
-                <!--<video-player  class="video-player-box"
-                               ref="videoPlayer"
-                               :options="playerOptions"
-                               :playsinline="playsinline"
-                               customEventName="customstatechangedeventname"
-                               @play="onPlayerPlay($event)"
-                               @pause="onPlayerPause($event)"
-                >
-                </video-player>-->
-
-            </el-carousel>
-        </div>
-       <!-- <div class="block">
-            <el-carousel height="350px">
-                <el-carousel-item v-for="(item, id) in images" :key="id">
-                    <div class="block">
-                        <el-image :src="item"></el-image>
+                <el-carousel-item v-show="!videoShow"  v-for="(item, id) in images" :key="id">
+                    <div style="width:100%; height:auto; margin: auto 0;">
+                        <el-image :src="item" style="width: 100%;height: auto"></el-image>
                     </div>
                 </el-carousel-item>
             </el-carousel>
-        </div>-->
+        </div>
+        <div>
+            <div style="border: #C0C4CC solid 1px">
+                <ul class="sub-image-ul" style="list-style: none">
+                    <li  v-for="(image, id) in images"
+                         @mouseenter="imageShow(id)"
+                         @mouseleave="imageLeave"
+                         style="display: inline; height: 70px;">
+                        <el-image
+                                  class="sub-image"
+                                  style="width: 70px;
+                                    height: 70px;
+                                    margin: auto 5px;"
+                                  :src="image"
+                                  :key="id"
+                                  v-bind:style='imgActive==id ? {"border":"red solid 2px",} : {}'
+                                  fit="contain">
+                        </el-image>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -59,6 +72,21 @@
 //图片浮层显示播放按钮
     export default {
         name: "ImageVideoSwipe",
+        props: {
+            video: {
+                type: String,
+                default() {
+                    return  "";
+                }
+            },
+            /*images: {
+                type: Array,
+                default() {
+                    return [];
+                }
+            }*/
+
+        },
         components: {
         },
         computed: {
@@ -76,36 +104,36 @@
         },
         data() {
             return {
+                imgActive: 0,
+                autoplay: true,
+                videoShow: false,
+                videoPlayState: false,
                 images: [
-                    "https://rwenjie-blog.oss-cn-hangzhou.aliyuncs.com/diy-shop/Rwenjie/image/202105211621590189752394.png",
-                    "https://rwenjie-blog.oss-cn-hangzhou.aliyuncs.com/diy-shop/Rwenjie/image/202105211621600502593428.jpg",
-                    "https://rwenjie-blog.oss-cn-hangzhou.aliyuncs.com/diy-shop/Rwenjie/image/202105251621947684251727.jpg",
-                    "https://rwenjie-blog.oss-cn-hangzhou.aliyuncs.com/diy-shop/Rwenjie/image/202105251621947687925762.png",
+                    "https://rwenjie-blog.oss-cn-hangzhou.aliyuncs.com/diy-shop/Rwenjie/image/20210525162194768087599.png?Expires=1621951282&OSSAccessKeyId=LTAI5tLif7W8mDXahA7mzpdP&Signature=%2FVEiUoAzk0RK3nPpeynA0p9rkK4%3D"
                 ],
                 playerOptions: {
-                    playbackRates: [0.7, 1.0, 1.5, 2.0],
-                    autoplay: false,
-                    muted: false,
-                    loop: false,
-                    preload: 'auto',
+                    playbackRates: [0.7, 1.0, 1.5, 2.0], // 播放速度
+                    autoplay: false,// 加载完成后是否自动播放
+                    muted: true, // 是否静音
+                    loop: false, // 是否循环播放
+                    preload: 'auto', // 建议浏览器在<video>加载元素后是否应该开始下载视频数据。auto浏览器选择最佳行为,立即开始加载视频（如果浏览器支持）
                     language: 'zh-CN',
-                    aspectRatio: '16:9',
-                    fluid: true,
+                    aspectRatio: '16:9', // 宽高比例
+                    fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
                     sources: [{
-                        type: "video/mp4",
-                        src: "https://cdn.theguardian.tv/webM/2015/07/20/150716YesMen_synd_768k_vp8.webm"
+                        type: "video/mp4",// 这里的种类支持很多种：基本视频格式、直播、流媒体等，具体可以参看git网址项目
+                        src: this.video
                     }],
-                    poster: "http://localhost/547be638615da10.png",
+                    poster: "http://localhost/547be638615da10.png",  // 你的封面地址
                     width: document.documentElement.clientWidth,
-                    notSupportedMessage: '此视频暂无法播放，请稍后再试',
-                    controlBar: {
+                    notSupportedMessage: '此视频暂无法播放，请稍后再试',  // 允许覆盖Video.js无法播放媒体源时显示的默认信息。
+                    controlBar: { // 为false时不显示默认的控制按钮
                         timeDivider: true,
                         durationDisplay: true,
                         remainingTimeDisplay: false,
                         fullscreenToggle: true  //全屏按钮
                     }
                 },
-                //videoButton: require(""),
             }
         },
         methods: {
@@ -113,9 +141,31 @@
                 this.$refs.videoPlayer.player.play();
             },
             onPlayerPlay(player) {
+
+            },
+            onPlayerPause() {
+
+            },
+            ImageChange(id) {
+                console.log(id);
+                this.imgActive = id
+            },
+            imageShow(id) {
+                this.videoShow = false;
+                this.autoplay = false;
+                this.$refs.videoPlayer.player.pause()
+                this.$refs.imagSwipe.setActiveItem(id)
+            },
+            videoPlay() {
+                this.videoShow = true;
+                this.$refs.videoPlayer.player.play();
                 this.videoPlayState = true;
+            },
+            imageLeave() {
+               this.autoplay = true;
             }
-        }
+        },
+
 
     }
 </script>
@@ -129,6 +179,7 @@
         line-height: 150px;
         margin: 0;
     }
+
 
     .el-carousel__item:nth-child(2n) {
         background-color: #ffffff;

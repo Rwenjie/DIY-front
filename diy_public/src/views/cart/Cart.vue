@@ -18,15 +18,15 @@
                     <span>交易操作</span>
                 </div>
                 <ul class="orderList" style="list-style-type: none; padding-left: 0">
-                    <li v-for="(item,index) in itemList" :key="'order'+item.id">
+                    <li v-for="(item,index) in itemList" :key="index">
 
                         <div class="orderDetail">
-                            <img :src="item.product.img" alt="商品图片" />
+                            <img :src="item.product.images[0]" alt="商品图片" />
                             <div class="goodsName">
-                                <p @click="navTo('/mall/goods/'+item.product.id)">{{item.product.title}}</p>
-                                <span>{{item.product.spec}}</span>
+                                <p @click="navTo('/article/'+item.articleId)">{{item.product.title}}</p>
+                                <span>{{item.sku.ownSpec}}</span>
                             </div>
-                            <span class="unitPrice">{{'￥'+item.sku.unitPrice}}</span>
+                            <span class="unitPrice">{{'￥'+item.sku.price}}</span>
                             <span class="num">
                                 <NumberInput
                                     @changeHandle="numberChange(item.id)"

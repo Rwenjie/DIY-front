@@ -129,15 +129,7 @@
                                     :rounded=true
                                     width="100%"
                                     style="padding: 5px 0 10px 5px">
-                                <el-row style="margin-top: 5px">
-                                    <el-col :span="12">
-                                        <!--<test></test>-->
-                                        <image-video-swipe></image-video-swipe>
-                                    </el-col>
-                                    <el-col :span="12">
-                                        <goods-detail :goods-item="goods"></goods-detail>
-                                    </el-col>
-                                </el-row>
+                                    <goods-info :articleId="articleId"></goods-info>
                             </v-sheet>
                         </div>
                         <div style="max-width: 950px;
@@ -153,7 +145,7 @@
                                     width="100%"
                                     style="padding: 5px 0 10px 5px">
                                 <el-row style="padding: 50px">
-                                    <r-comment></r-comment>
+                                    <r-comment :articleId="articleId"></r-comment>
                                     <!--<review :dataList="dataList"></review>-->
                                     <!--<r-comment :articleId="cb6e6cad-bb02-46f6-8640-055473d451d9"></r-comment>-->
                                 </el-row>
@@ -178,10 +170,9 @@
 <script>
 
     import Test from "./childComps/Test";
-    import GoodsDetail from "./childComps/GoodsDetail";
     import PopularPosts from "./childComps/PopularPosts";
     import Review from "components/content/review/Review";
-    import ImageVideoSwipe from "./childComps/ImageVideoSwipe";
+    import GoodsInfo from "./childComps/GoodsInfo";
     import CategoryNav from "components/content/categoryNav/CategoryNav";
     import {cancelStar, getArticleById, getStar, getStarState} from "../../network/article";
     import {getAllCategory, getTagById, getCategoryById} from "../../network/common";
@@ -189,16 +180,11 @@
     export default {
         name: "Article",
         components: {
-           /* ArticleSwiper,
-
-            VideoPlayTest*/
-            ImageVideoSwipe,
+            GoodsInfo,
             Test,
-            GoodsDetail,
             Review,
             PopularPosts,
             CategoryNav,
-          /*  RComment*/
         },
         data(){
             return{
@@ -306,7 +292,7 @@
                     this.starStatus = res.data;
                 })
             },
-            loadtagList(){
+            loadTagList(){
                 if (this.article.tags!="") {
                     let tagList= this.article.tags.split(',');
                     tagList.forEach( (tag) => {
@@ -315,7 +301,6 @@
                                 this.tags.push(res.data)
                             })
                         }
-
                     });
                 }
             },
@@ -329,7 +314,6 @@
                                 this.categories.push(res.data);
                             })
                         }
-
                     })
                 }
             },
@@ -340,13 +324,9 @@
                     this.loadCategory(res.data.categoryId);
                     //获得用户是否star该文章
                     this.getStarState();
-                    this.loadtagList();
+                    this.loadTagList();
                     this.subCategory();
-
                 });
-            },
-            loadGoodsInfo() {
-
             },
             loadCategory(cid) {
                 getAllCategory(cid).then( res=> {

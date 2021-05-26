@@ -105,7 +105,7 @@
                     </el-col>
                 </el-row>
             </div>
-            <div style="text-align: left; padding: 10px 0 0 24px">
+        <!--    <div style="text-align: left; padding: 10px 0 0 24px">
                 <span class="property-type">售后服务</span>
                 <span class="" style="width: 300px; display:inline-block; padding-left:10px">
                     <span v-for="(item, id) in afterService" :key="item"
@@ -120,7 +120,7 @@
                           style="padding: 5px"
                     >{{item}}</span>
                 </span>
-            </div>
+            </div>-->
         </div>
 
         <el-dialog
@@ -143,15 +143,28 @@
 
     import VueSelectImage from 'vue-select-image'
     require('vue-select-image/dist/vue-select-image.css');
-    import goodsIt from '../data'
     import ImageSelect from "../../../components/common/imageSelect/ImageSelect";
-    import {cancelItemStar, getItemByArticle, getItemStar, getItemStarState} from "../../../network/item";
+    import {cancelItemStar, getItemStar, getItemStarState} from "../../../network/item";
 
     export default {
         name: "GoodsDetail",
         components:{
             VueSelectImage,
             ImageSelect
+        },
+        props: {
+            goods: {
+                type: Object,
+                default() {
+                    return{}
+                }
+            },
+            articleId: {
+                type: String,
+                default(){
+                    return ""
+                }
+            }
         },
         data() {
             return{
@@ -161,21 +174,9 @@
                     id: "",  //编号
                     count: 1,       //数量
                     amount: 0.00,   //金额
-                    product: {
-                        id: "",
-                        title: "GoodsName",
-                        img: "https://rwenjie-blog.oss-cn-hangzhou.aliyuncs.com/diy-shop/default%20avatar.png",
-                    },
-                    sku: {
-                        id: '',
-                        unitPrice: 0.00, //单价
-                        metatit: [
-                            {
-                                label: "",
-                                value: ""
-                            }
-                        ]
-                    },
+                    articleId: this.articleId,
+                    product: {},
+                    sku: {},
                 },
                 //sku选择中是否有图片
                 isImage: false,
@@ -205,7 +206,6 @@
         methods: {
             //点赞
             giveLike() {
-                alert(this.goodsItem.id)
                 getItemStar(this.goodsItem.id).then( res => {
                     this.likeState();
                     if (res.status == 200) {
@@ -226,20 +226,27 @@
             },
             //更新点赞状态
             likeState() {
-                getItemStarState(this.goodsItem.id).then( res => {
+              /*  getItemStarState(this.goodsItem.id).then( res => {
                     this.starStatus = res.data;
-                })
+                })*/
             },
             loadAddress() {
                 this.diaAddressVisible = true;
             },
             addCart() {
+                let n = this.skus.findIndex( sku => sku.indexes = this.selected);
+                this.selItem.sku = this.skus[n];
+                this.selItem.product = this.goodsItem;
+                this.selItem.articleId = this.articleId;
                 this.$store.dispatch("addCart", this.selItem).then( res => {
                     alert(res)
                 });
 
             },
             purchaseNow() {
+               let n = this.skus.findIndex( sku => sku.indexes = this.selected);
+               this.selItem.sku = this.skus[n];
+               this.selItem.product = this.goodsItem;
 
             },
             addrDialogClose() {
@@ -334,50 +341,41 @@
                 }
             },
             loadGoodsInfo(){
-                /*// getItemByArticle().then( res => {
-                //
-                // });*/
-                getItemByArticle(this.articleId).then( res => {
-                    console.log("article===================>");
-                    const item = res.data;
-                    item.spec = JSON.parse(item.spec);
-                    item.payMethod = JSON.parse(item.payMethod);
-                    console.log(item);
-                    this.goodsItem = item;
 
-
-                    //this.goodsItem = goodsIt;
-                    this.skus = this.goodsItem.skus;
-
-                    //判断是否选择是否有图片
-                    this.goodsItem.spec.forEach( (item) => {
-                        if (item.isImage) {
-                            this.isImage = true;
-                        }
-                    });
-                    //处理地址
-                    //form
-                    this.fromAddr.province.code = Object.keys(this.goodsItem.express.from[0])[0];
-                    this.fromAddr.province.label = Object.values(this.goodsItem.express.from[0])[0];
-                    this.fromAddr.city.code = Object.keys(this.goodsItem.express.from[1])[0];
-                    this.fromAddr.city.label = Object.values(this.goodsItem.express.from[1])[0];
-                    //to
-                    this.toAddr = this.goodsItem.express.to;
-                    this.modifyDataToAddr();
-
-                    this.skus[0].indexes.forEach( (index) => {
-                        this.selected.push(index);
-                    });
-                    for (let i=0; i<this.selected.length; i++) {
-                        this.goodsItem.spec[i].option[this.selected[i]].disabled = false;
-                        this.change(i)
-                    }
-                    this.changeInfo();
-                    console.log(this.goodsItem);
-
-                    //加载商品喜欢
-                    this.likeState()
+                const item = JSON.parse(JSON.stringify(this.goods));
+                this.goodsItem = item;
+                this.skus = this.goodsItem.skus;
+                console.log(this.skus[0]);
+                this.skus[0].indexes.forEach( (index) => {
+                    console.log("index===>");
+                    console.log(index);
+                    this.selected.push(index);
                 });
+
+                //判断是否选择是否有图片
+                this.goodsItem.spec.forEach( (item) => {
+                    if (item.isImage) {
+                        this.isImage = true;
+                    }
+                });
+                //处理地址
+                //form
+                this.fromAddr.city.code = Object.keys(this.goodsItem.fromAddr[0])[0];
+                this.fromAddr.city.label = Object.values(this.goodsItem.fromAddr[0])[0];
+                this.fromAddr.province.code = Object.keys(this.goodsItem.fromAddr[1])[0];
+                this.fromAddr.province.label = Object.values(this.goodsItem.fromAddr[1])[0];
+                //to
+                /*this.toAddr = this.goodsItem.express.to;
+                this.modifyDataToAddr();*/
+
+                for (let i=0; i<this.selected.length; i++) {
+                    this.goodsItem.spec[i].option[this.selected[i]].disabled = false;
+                    this.change(i)
+                }
+                this.changeInfo();
+
+                //加载商品喜欢
+                this.likeState()
             },
 
         },
@@ -389,6 +387,12 @@
                 deep: true,
                 handler(){
 
+                }
+            },
+            goods:{
+                deep: true,
+                handler(){
+                    this.loadGoodsInfo();
                 }
             }
         }
