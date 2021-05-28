@@ -1,12 +1,14 @@
 import {
     ADD_COUNTER,
-    ADD_TO_CART
+    ADD_TO_CART,
+    LOAD_CART,
+    DELETE_CART_ITEM
 } from "../mutations-type";
 
-import itemList from "../data";
+import {addCart, getAllCart, updateCartCount} from "../../network/cart";
 
 const state = {
-    itemList: itemList
+    itemList: []
 };
 //mutations 的目的 修改stats中的状态
 //mutations 的操作尽可能的单一
@@ -18,6 +20,12 @@ const mutations = {
     },
     [ADD_TO_CART](state, payload) {
         state.itemList.push(payload)
+    },
+    [LOAD_CART](state, payload) {
+        state.itemList = payload;
+    },
+    [DELETE_CART_ITEM](state, payload) {
+
     }
 };
 
@@ -38,12 +46,44 @@ const  actions = {
                    oldProduct,
                    count: payload.count
                });
+               const cart = JSON.parse(JSON.stringify(oldProduct));
+               cart.goodsId = cart.product.id;
+               cart.skuId = cart.sku.id;
+               cart.count += payload.count;
+               updateCartCount(cart).then(res => {
+                   console.log(res);
+               });
                resolve('当时商品数量加一')
            } else {
-               context.commit(ADD_TO_CART, payload);
-               resolve('添加了新的商品')
+
+               const cart = JSON.parse(JSON.stringify(payload));
+               cart.goodsId = cart.product.id;
+               cart.skuId = cart.sku.id;
+               console.log(cart);
+               delete cart.product;
+               delete cart.sku;
+               addCart(cart).then(res => {
+                   console.log(res);
+                   if (res.code === 200) {
+                       context.commit(ADD_TO_CART, payload);
+                       resolve('添加了新的商品');
+                   }
+               })
            }
        }))
+    },
+    loadCart(context) {
+        return new Promise(((resolve, reject) => {
+            console.log("loadCart");
+            getAllCart().then( res => {
+                context.commit(LOAD_CART, res.data);
+            })
+        }))
+    },
+    deleteCartItem() {
+        return new Promise(((resolve, reject) => {
+
+        }))
     }
 };
 

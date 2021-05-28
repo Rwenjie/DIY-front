@@ -135,6 +135,7 @@
                 <el-button type="primary" @click="addrDialogClose">确 定</el-button>
             </span>
         </el-dialog>
+
     </div>
 </template>
 
@@ -145,6 +146,7 @@
     require('vue-select-image/dist/vue-select-image.css');
     import ImageSelect from "../../../components/common/imageSelect/ImageSelect";
     import {cancelItemStar, getItemStar, getItemStarState} from "../../../network/item";
+    import {createOrderNow} from "../../../network/order";
 
     export default {
         name: "GoodsDetail",
@@ -245,8 +247,21 @@
             },
             purchaseNow() {
                let n = this.skus.findIndex( sku => sku.indexes = this.selected);
-               this.selItem.sku = this.skus[n];
-               this.selItem.product = this.goodsItem;
+               this.selItem.skuId = this.skus[n].id;
+               this.selItem.goodsId = this.goodsItem.id;
+               this.selItem.articleId = this.articleId;
+               const order = JSON.parse(JSON.stringify(this.selItem));
+               delete order.product;
+               delete order.sku;
+                createOrderNow(order).then( res => {
+                    console.log("========");
+                    console.log(res.data);
+                    let newpage = this.$router.resolve({
+                        name: 'messageInfo',
+                        path: "/order/detail/"+res.data,
+                    });
+                    window.open(newpage.href, '_blank');
+                })
 
             },
             addrDialogClose() {
@@ -280,9 +295,15 @@
                 this.changeInfo();
             },
             change(sid) {
+                if (this.goodsItem.spec.length==1) {
+                    this.goodsItem.spec[0].option.forEach( (op) => {
+                        op.disabled = false;
+                    });
+                    return;
+                }
                 this.goodsItem.spec[sid].option[this.selected[sid]].disabled = false;
                 // console.log("现在选定的是第"+this.selected[sid]+"个选项");
-                for (let i=0; i<this.skus.length; i++) {
+                for (i=0; i<this.skus.length; i++) {
                    // console.log("与skus["+i+"]个开始匹配");
                     if (this.selected[sid] == this.skus[i].indexes[sid]) {
                       // console.log("这个skus中有我们需要的值");

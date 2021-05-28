@@ -8,10 +8,10 @@
 
 import {request} from "./request"
 
-export function addCart(item) {
+export function addCart(data) {
     return request({
-        url: '/cart/addCart',
-        data: item,
+        url: '/cart/add',
+        data,
         method: "post",
         headers:{
             'Content-Type':'application/json;charset=utf-8'
@@ -22,5 +22,24 @@ export function addCart(item) {
 export function getAllCart() {
     return request({
         url: '/cart/all'
+    })
+}
+export function updateCartCount(item) {
+    return request( {
+        url: '/cart/count/add',
+        data: item,
+        method: "post",
+        headers:{
+            'Content-Type':'application/json;charset=utf-8'
+        }
+    })
+}
+
+export function deleteCart(idList) {
+    return request( {
+        url: '/cart/count/add',
+        params: {
+            idList
+        }
     })
 }

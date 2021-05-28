@@ -109,12 +109,10 @@ const routes = [
                 name:'CartList',
                 component: Cart
             },
-
-
         ]
     },
     {
-        path: '/order/detail',
+        path: '/order/detail/:oid',
         name: 'OrderDetail',
         component: OrderDetail,
     }

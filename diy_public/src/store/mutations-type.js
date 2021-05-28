@@ -18,8 +18,13 @@ export const SET_TOKEN = "set-token";
 export const ADD_IMAGES = "add-images";
 export const ADD_SKUS = "add-skus";
 
+/**
+ * 购物车相关操作
+ */
 export const ADD_COUNTER = 'add_counter';
 export const ADD_TO_CART = 'add_to_cart';
+export const LOAD_CART = "load_cart";
+export const DELETE_CART_ITEM = "delete_cart_item";
 
 export const LOAD_CATEGORIES = "load_categories";
 

@@ -58,6 +58,7 @@
 
 <script>
     import OrderList from "./childComps/OrderList";
+    import {loadOrder} from "../../network/order";
     export default {
         name: "Orders",
         components: {
@@ -103,8 +104,18 @@
             orderStatus(id) {
                 this.activeIndex = id;
 
+            },
+            loadOrder() {
+                loadOrder().then( res => {
+                    console.log("order");
+                    this.orderList = res.data;
+                    console.log(res.data);
+                })
             }
 
+        },
+        mounted() {
+            this.loadOrder();
         }
     }
 </script>

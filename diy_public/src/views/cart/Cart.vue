@@ -21,6 +21,13 @@
                     <li v-for="(item,index) in itemList" :key="index">
 
                         <div class="orderDetail">
+                            <div style="width: 100px; height: 100px; float: left; padding-left: 70px">
+                                <v-checkbox
+                                        v-model="selected"
+                                        label=""
+                                        :value=item.id
+                                ></v-checkbox>
+                            </div>
                             <img :src="item.product.images[0]" alt="商品图片" />
                             <div class="goodsName">
                                 <p @click="navTo('/article/'+item.articleId)">{{item.product.title}}</p>
@@ -87,10 +94,10 @@
         },
         data () {
             return {
+                selected: ["",],
                 orderList:[],
             }
         },
-
         methods:{
             getOrderByState(state){
                 /*const res = getOrderByState(state,this.clientToken);
@@ -136,31 +143,17 @@
                 this.$router.push(route);
             },
             settleAccounts(){
-                let cartList = [];
-                this.orderList.map((item,index)=>{
-                    cartList.push({
-                        id:item.id,
-                        goodsNum:item.temGoodsNum,
-                        amount:item.amount
-                    })
-                });
-                const res = settleAccounts({
-                    cartList:cartList
-                });
-                res
-                    .then(()=>{
-                        alert('下单成功！');
-                        this.orderList = [];
-                    })
-                    .catch((e)=>{
-                        alert(e);
-                    })
+
             }
         },
         mounted(){
             //this.getOrderByState(0);
+            this.$store.dispatch("loadCart");
             console.log(this.itemList);
         },
+        created() {
+
+        }
     }
 </script>
 

@@ -22,9 +22,7 @@ import {getTreeData} from "../../utils/utils";
 import {categoryList} from "network/item";
 
 const state = {
-    orderDetail: {
-
-    }
+    orderList: [],
 };
 //mutations 的目的 修改stats中的状态
 //mutations 的操作尽可能的单一

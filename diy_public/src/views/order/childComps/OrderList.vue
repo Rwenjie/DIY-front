@@ -19,7 +19,7 @@
             </div>
 
             <div style="margin: 15px 0;"></div>
-           <div class="item-box">
+           <div class="item-box" v-for="(item, id) in orderList" :key="id">
                <div class="item-head" style="background-color: #eaf8ff; height: 50px">
                    <div style="width: 50px; height: 50px; padding: 10px; float: left">
                        <v-checkbox
@@ -29,24 +29,24 @@
                        </v-checkbox>
                    </div>
                    <div>
-                       <span style="width: auto">2021年5月18日15:32:37</span>
+                       <span style="width: auto">{{item.order.createdTime}}</span>
                    </div>
                </div>
-               <div class="item-body">
+               <div class="item-body" v-for="(detail, id) in item.orderDetailList" :key="id">
                    <div class="item-info item" style="border-left: white">
-                       <div  style="width: 80px; height: 80px; float: left">
+                       <div style="width: 80px; height: 80px; float: left">
                            <el-image
                                    style="width: 100%; height:100%"
-                                   :src="url"
+                                   :src="detail.goods.images[0]"
                                    fit="cover"></el-image>
                        </div>
                        <div class="info-text" style="">
-                           <p @click="">袜子男士船袜男短袜夏季薄款纯色防臭低帮短筒夏天浅口隐形棉袜潮</p>
-                           <span> 颜色分类：3双3色体验装</span>
+                           <p @click="">{{detail.goods.title}}</p>
+                           <span>{{detail.sku.ownSpec}}</span>
                        </div>
                    </div>
                    <div class="item-price item">
-                       <span>￥10.52</span>
+                       <span>{{detail.sku.price}}</span>
                    </div>
                    <div class="item-count item">
                        <span>2</span>
@@ -63,7 +63,6 @@
                    </div>
                    <div class="item-deal item">交易操作</div>
                </div>
-
            </div>
 
         </div>
@@ -79,6 +78,14 @@
         name: "OrderList",
         components: {
             OrderListItem
+        },
+        props: {
+            orderList: {
+                type: Array,
+                default() {
+                    return []
+                }
+            }
         },
         data() {
             return {

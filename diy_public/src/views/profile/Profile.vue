@@ -14,7 +14,8 @@
                         class="mx-auto"
                         width="300">
                     <v-list>
-                        <v-list-item>
+                        <v-list-item
+                                to="/home">
                             <v-list-item-icon>
                                 <v-icon>mdi-home</v-icon>
                             </v-list-item-icon>
@@ -23,21 +24,15 @@
                         </v-list-item>
 
                         <!--一级-->
-                        <v-list-group
-                                :value="true"
+                        <v-list-item
                                 v-for="(item, id) in items"
-                                prepend-icon="mdi-account-circle">
-                            <template v-slot:activator>
-                                <v-list-item-title>{{item.title}}</v-list-item-title>
-                            </template>
-                            <!--二级-->
-                            <v-list-item
-                                    v-for="(subItem, index) in item.items"
-                                    :to="basePath + item.path + subItem.path"
-                                    link>
-                                <v-list-item-title v-text="subItem.title"></v-list-item-title>
-                            </v-list-item>
-                        </v-list-group>
+                                :key="id"
+                                :to="basePath + item.path">
+                            <v-list-item-icon>
+                                <v-icon>{{item.action}}</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-title>{{item.title}}</v-list-item-title>
+                        </v-list-item>
                     </v-list>
                 </v-card>
             </el-aside>
@@ -74,48 +69,53 @@
                 basePath: "/profile",
                 menus: [
                     {
-                        action: "ab-testing",
-                        title: "个人信息",
-                        path:"/info",
-                        items: [{ title: "修改个人信息", path: "/detail" },
-                            { title: "修改密码", path: "/pwd" },]
+                        action: "mdi-lock-reset",
+                        title: "修改密码",
+                        path:"/info/pwd",
                     },
                     {
-                        action: "ab-testing",
-                        title: "我的关注",
-                        path:"/follow",
-                        items: [
-                            { title: "关注的文章", path: "/article" },
-                            { title: "关注的用户", path: "/user" },
-                        ]
+                        action: "mdi-account-cog",
+                        title: "我的信息",
+                        path:"/info/detail",
                     },
                     {
-                        action: "ab-testing",
-                        title: "我的关注",
-                        path:"/cart",
-                        items: [
-                            { title: "购物车", path: "/listing" },
-                            { title: "关注的用户", path: "/user" },
-                        ]
+                        action: "mdi-data-matrix-edit",
+                        title: "编辑文章",
+                        path:"/article/editor",
                     },
                     {
-                        action: "ab-testing",
-                        title: "商品",
-                        path:"/items",
-                        items: [
-                            { title: "我发布的的", path: "/listing" },
-                            { title: "我买到的", path: "/order" },
-                        ]
+                        action: "mdi-cart-variant",
+                        title: "购物车",
+                        path:"/cart/listing",
+
                     },
                     {
-                        action: "ab-testing",
-                        title: "文章",
-                        path:"/article",
-                        items: [
-                            { title: "我发布的的", path: "/listing" },
-                            { title: "发布新文章", path: "/editor" },
-                        ]
-                    }
+                        action: "mdi-shopping",
+                        title: "我的商品",
+                        path: "/items/listing"
+                    },
+                    {
+                        action: "mdi-text-box-check-outline",
+                        title: "订单",
+                        path:"/items/order",
+                    },
+                    {
+                        action: "mdi-file",
+                        title: "我的文章",
+                        path:"/article/listing",
+                    },
+                    {
+                        action: "mdi-star-plus",
+                        title: "收藏的文章",
+                        path:"/follow/article",
+                    },
+                   /* {
+                        action: "mdi-account-star",
+                        title: "关注的用户",
+                        path:"/follow/user",
+                    },*/
+
+
                 ]
             }
         },
@@ -123,7 +123,7 @@
             items() {
                 return this.menus;
             },
-            item1() {
+            /*item1() {
                 const arr = this.$route.path.split("/");
                 console.log(arr);
                 console.log(this.menuMap[arr[2]]);
@@ -132,7 +132,7 @@
             item2() {
                 const arr = this.$route.path.split("/");
                 return this.menuMap[arr[2]][arr[3]];
-            }
+            }*/
         },
         watch: {},
         created() {
@@ -141,7 +141,7 @@
                 this.menuMap[p1] = {name: m.title};
                 m.items.forEach(i => {
                     this.menuMap[p1][i.path.slice(1)] = i.title;
-                })
+                });
                 console.log(this.menuMap);
             })
         }

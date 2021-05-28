@@ -79,12 +79,12 @@
                     return  "";
                 }
             },
-            /*images: {
+            images: {
                 type: Array,
                 default() {
                     return [];
                 }
-            }*/
+            }
 
         },
         components: {
@@ -108,9 +108,7 @@
                 autoplay: true,
                 videoShow: false,
                 videoPlayState: false,
-                images: [
-                    "https://rwenjie-blog.oss-cn-hangzhou.aliyuncs.com/diy-shop/Rwenjie/image/20210525162194768087599.png?Expires=1621951282&OSSAccessKeyId=LTAI5tLif7W8mDXahA7mzpdP&Signature=%2FVEiUoAzk0RK3nPpeynA0p9rkK4%3D"
-                ],
+                images: [],
                 playerOptions: {
                     playbackRates: [0.7, 1.0, 1.5, 2.0], // 播放速度
                     autoplay: false,// 加载完成后是否自动播放

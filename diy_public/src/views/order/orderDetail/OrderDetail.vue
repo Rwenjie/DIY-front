@@ -21,8 +21,7 @@
 
             </div>
 
-            <div class="confirm-info">
-
+            <div class="confirm-info" v-if="">
                 <order-address></order-address>
             </div>
         </div>
@@ -32,6 +31,7 @@
 
 <script>
     import OrderAddress from "./childComps/OrderAddress";
+    import {getOrderByOid} from "../../../network/order";
     export default {
         name: "OrderDetail",
         components:{
@@ -39,9 +39,10 @@
         },
         data(){
            return{
+               oid: this.$route.params.oid,
                order: {
                    orderNo: "", //订单编号
-                   orderStatus: 0,    //0未付款,1已付款,2已发货,3已签收,-1退货申请,-2退货中,-3已退货,-4取消交易'
+                   orderStatus: 0,    //0未付款,1已付款,2已发货,3已签收,4新的订单,-1退货申请,-2退货中,-3已退货,-4取消交易'
                    buyerId: "",     //卖方id
                    sellerId: "",    //卖方id
                    afterStatus: "",  //售后状态
@@ -59,6 +60,19 @@
                    orderSettlementTime: "",     //订单结算时间
                }
            }
+        },
+        methods: {
+            loadOrderDetail(){
+                console.log("oid");
+                console.log(this.oid);
+                getOrderByOid(this.oid).then( res => {
+                    console.log(res);
+                    this.order = res.data;
+                })
+            }
+        },
+        mounted() {
+            this.loadOrderDetail();
         }
     }
 </script>

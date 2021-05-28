@@ -190,10 +190,13 @@
 
                 //保存登录状态
                 this.$store.dispatch("loginSuccess");
+                //获取用户购物车信息
+                this.$store.dispatch("loadCart");
        /*         //获取用户信息
                 this.$store.dispatch("getUserDetail");
                 //切换导航条
                 this.$emit("LoginSuccess")*/
+
             },
 
             //请求验证码
