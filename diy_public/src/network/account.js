@@ -8,6 +8,12 @@
 
 import {request} from "./request";
 
+export function logout(){
+    return request({
+        url: '/logout/',
+    })
+}
+
 // 发送验证码
 export function getCode(mobile){
     return request({

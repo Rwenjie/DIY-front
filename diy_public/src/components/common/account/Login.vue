@@ -110,7 +110,7 @@
 
         },
         data() {
-            var checkMobile = (rule, value, callback) => {
+            let checkMobile = (rule, value, callback) => {
                 this.mobileStatus = true;
                 if (!value) {
                     this.mobileStatus = false;
@@ -169,6 +169,12 @@
             doPwdLogin() {
                 console.log("账号密码登录");
                 mobileLogin(this.pwdLogin.mobile, this.pwdLogin.password).then(res => {
+                    this.visible = false;
+                    //保存登录成功后的token
+                    const tokenStr = res.data.tokenHead+res.data.token;
+
+                    window.sessionStorage.setItem('tokenStr', tokenStr);
+                    window.location.reload()
                     this.loginSuccess(res);
                 });
             },
@@ -179,29 +185,17 @@
             },
 
             loginSuccess(res) {
-                console.log(res);
-                this.visible = false;
-
-
-                //保存登录成功后的token
-                const tokenStr = res.data.tokenHead+res.data.token;
-                console.log("token=>"+tokenStr);
-                window.sessionStorage.setItem('tokenStr', tokenStr);
-
-                //保存登录状态
-                this.$store.dispatch("loginSuccess");
-                //获取用户购物车信息
-                this.$store.dispatch("loadCart");
-       /*         //获取用户信息
-                this.$store.dispatch("getUserDetail");
-                //切换导航条
-                this.$emit("LoginSuccess")*/
-
+                return new Promise((resolve, reject) => {
+                    //获取用户信息
+                    this.$store.dispatch("getUserDetail");
+                    //获取用户购物车信息
+                    this.$store.dispatch("loadCart");
+                });
             },
 
             //请求验证码
             getCaptcha() {
-                alert("获取短信验证码")
+                alert("获取短信验证码");
                 if (this.captchaLogin.mobile == '') {
                     this.$message({
                         message: '手机号不能为空',

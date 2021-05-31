@@ -98,13 +98,15 @@
                 } else if (value.length < 4) {
                     callback(new Error('用户名最少为4位'));
                 }else {
-                    console.log(value);
                     checkUsername(value).then( res => {
+                        console.log(res);
                         if (res.code == 501) {
                             callback(new Error('用户名已经被注册'));
+                        }else {
+                            callback();
                         }
                     });
-                    callback();
+
                 }
             };
             let validatePass = (rule, value, callback) => {

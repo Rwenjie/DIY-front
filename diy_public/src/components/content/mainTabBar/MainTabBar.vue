@@ -39,17 +39,32 @@
                     <i class="el-icon-bell"></i>
                     <i class="el-icon-arrow-down el-icon--right"></i>
                   </el-button>
+
                 </el-tooltip>
-                <el-tooltip class="item sec-tex" effect="dark" content="个人中心" placement="bottom">
+                <el-popover
+                        placement="top-start"
+                        width="50"
+                        trigger="hover">
+                  <el-button class="sign-in-btn" @click="logout">
+                    sign out <v-icon>mdi-logout-variant</v-icon>
+                  </el-button>
+
+                  <el-button  slot="reference" @click="clickToPage('/profile')">
+                    <div class="block">
+                      <el-avatar :size="20" :src="profile.profileUrl"></el-avatar>
+                    </div>
+                  </el-button>
+                </el-popover>
+               <!-- <el-tooltip class="item sec-tex" effect="dark" content="个人中心" placement="bottom">
                   <template #content>
-                    <span class="tooltip-text">个人中心</span>
+                    <span class="tooltip-text"></span>
                   </template>
                   <el-button @click="clickToPage('/profile')">
                     <div class="block">
                       <el-avatar :size="20" :src="profile.profileUrl"></el-avatar>
                     </div>
                   </el-button>
-                </el-tooltip>
+                </el-tooltip>-->
                 <el-tooltip class="item sec-tex" effect="dark" content="购物车" placement="bottom">
                   <template #content>
                     <span class="tooltip-text">购物车</span>
@@ -67,11 +82,6 @@
                 <el-button class="sign-in-btn" @click="registerVisible">
                   Register
                 </el-button>
-                <!--<el-tooltip class="item" effect="dark" content="购物车" placement="bottom">
-                  <el-button>
-                    <i class="el-icon-shopping-cart-1"></i>
-                  </el-button>
-                </el-tooltip>-->
               </div>
             </el-col>
           </el-row>
@@ -88,6 +98,7 @@
   import Login from "components/common/account/Login";
   import Register from "components/common/account/Register";
   import Forget from "components/common/account/Forget";
+  import {logout} from "../../../network/account";
 
   let newVar = {
     name: "MainTabBar",
@@ -96,6 +107,7 @@
       Register,
       Forget
     },
+
     computed: {
       profile() {
         return this.$store.state.profile;
@@ -107,6 +119,7 @@
     data(){
       return {
         input: '',
+        lo:this.$store.state.loginState,
         profileBar: {
           img: '',
           describe: '跳转'
@@ -140,21 +153,22 @@
         }
         this.$router.push(path);
       },
+      logout() {
+        logout().then( res => {
+          console.log(res);
+          if (res.code == 200) {
+            window.sessionStorage.clear();
+            this.clickToPage("/home");
+            window.location.reload()
+          }
+        })
+      }
     },
     created() {
       //category
       this.$store.dispatch("loadCategories");
       //
     },
-/*    beforeMount() {
-      console.log("MainTabBar被挂载");
-    },
-    beforeUpdate() {
-      console.log("MainTabBar被挂载beforeUpdate");
-    },
-    updated() {
-      console.log("MainTabBar被挂载Update");
-    }*/
   };
   export default newVar
 </script>
