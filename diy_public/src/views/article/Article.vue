@@ -345,7 +345,6 @@
         },
         mounted() {
             this.loadArticleInfo();
-            this.$store.dispatch("loadCart");
 
         }
     }

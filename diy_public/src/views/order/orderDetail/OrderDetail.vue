@@ -17,12 +17,37 @@
                     <el-step title="评价" ></el-step>
                 </el-steps>
             </div>
-            <div>
 
+            <div class="confirm-info" v-if="item.order.orderStatus==0">
+                <order-address v-on:SelectAddr="selectedAddr"></order-address>
             </div>
+            <div>
+                <order-box :item="item"></order-box>
+            </div>
+            <div class="submit-order">
+                <div style="width: 50%; float: right">
+                    <div style="border: red solid 1px; text-align: right">
+                        <p>实付款：￥{{}}
 
-            <div class="confirm-info" v-if="">
-                <order-address></order-address>
+                        </p>
+                        <p>寄送至：
+                            <span v-for="addr in selAddr.addrList">
+                                {{addr.label}}
+                            </span>
+                            <span>
+                                {{selAddr.address}}
+                            </span>
+                        </p>
+                        <p>收货人：
+                            <span>
+                                {{selAddr.nickName}} {{selAddr.tel}}
+                            </span>
+                        </p>
+                    </div>
+                    <div>
+                        <el-button @click="aliPay">立即支付</el-button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -31,12 +56,22 @@
 
 <script>
     import OrderAddress from "./childComps/OrderAddress";
+    import OrderBox from "./childComps/OrderBox";
     import {getOrderByOid} from "../../../network/order";
+    import {mapGetters} from "vuex";
+    import {aliPcPay} from "../../../network/common";
     export default {
         name: "OrderDetail",
         components:{
-            OrderAddress
+            OrderAddress,
+            OrderBox
         },
+        computed: {
+            ...mapGetters({
+                defaultAddr: "defaultAddr",
+            })
+        },
+
         data(){
            return{
                oid: this.$route.params.oid,
@@ -58,6 +93,16 @@
                    deliveryTime: "",    //发货时间
                    orderSettlementStatus: "",   //订单结算状态 0未结算 1已结算
                    orderSettlementTime: "",     //订单结算时间
+               },
+               item: {
+                   order: {
+                       orderStatus: 1,
+                   }
+               },
+               selAddr: {
+                   addrList: [],
+                   nickName: "",
+                   label: ""
                }
            }
         },
@@ -66,13 +111,43 @@
                 console.log("oid");
                 console.log(this.oid);
                 getOrderByOid(this.oid).then( res => {
-                    console.log(res);
-                    this.order = res.data;
+                    if (res.code == 200) {
+                        this.item = res.data;
+                    }
+
                 })
+            },
+            selectedAddr(obj) {
+                console.log(obj);
+                this.selAddr=obj;
+            },
+            aliPay() {
+                let data={
+
+                    out_trade_no: "1234567890123",
+                    total_amount: "435.43",
+                    subject: "345",
+                    product_code: "FAST_INSTANT_TRADE_PAY",
+                };
+                aliPcPay(JSON.stringify(data)).then(res=>{
+                    //res即为后端返回的form表单
+                    //js创建一个div将form表单添加上去
+                    const div = document.createElement('div')
+                    div.innerHTML = res;
+                    document.body.appendChild(div);
+                    //调用form表单
+                    document.forms[0].submit();
+                });
             }
         },
+        beforeMount() {
+            this.$store.dispatch("loadAddress");
+        },
         mounted() {
+
             this.loadOrderDetail();
+            console.log(this.defaultAddr);
+            this.selAddr = JSON.parse(JSON.stringify(this.defaultAddr));
         }
     }
 </script>

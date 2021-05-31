@@ -7,7 +7,8 @@
  -->
 
 <template>
-    <el-submenu v-if="menu.children && menu.children.length >= 1" :index="menu.id+''">
+    <div v-if="menu==undefined"></div>
+    <el-submenu v-else-if="menu.children && menu.children.length >= 1" :index="menu.id+''">
         <template slot="title">{{menu.name}}</template>
         <sub-menu v-for="(submenu, id) in menu.children" :menu="submenu"/>
     </el-submenu>
@@ -27,7 +28,7 @@
             menu: {
                 type: Object,
                 default() {
-                    return null;
+                    return undefined;
                 }
             },
             menusName: {

@@ -23,7 +23,7 @@
                 <div class="form-body">
                         <el-form :model="registerForm"
                                  :rules="rules" ref="registerForm">
-                            <el-form-item >
+                            <el-form-item prop="username">
                                 <el-input class="form_input" v-model="registerForm.username" placeholder="用户名"
                                           autocomplete="off" maxlength="10" show-word-limit>
                                     <template #prefix>
@@ -39,7 +39,6 @@
                                     </template>
                                 </el-input>
                             </el-form-item>
-
                             <el-form-item prop="checkPass">
                                 <el-input class="form_input" type="password" v-model="registerForm.checkPass" autocomplete="off"
                                           placeholder="确认密码" show-password>
@@ -48,8 +47,8 @@
                                     </template>
                                 </el-input>
                             </el-form-item>
-                            <el-form-item>
-                                <el-input class="form_input" v-model="registerForm.tell" placeholder="手机号"
+                            <el-form-item prop="mobile">
+                                <el-input class="form_input" v-model="registerForm.mobile" placeholder="手机号"
                                           autocomplete="off" round>
                                     <template #prefix>
                                         <i class="el-input__icon el-icon-phone"></i>
@@ -60,20 +59,20 @@
                             <el-form-item>
                                 <div style="margin-top: 15px">
                                     <el-input class="verify-input" size="large" placeholder="验证码"  v-model="registerForm.captcha">
-                                        <template #append><el-button class="verify-btn" type="success" @click="doSendCode" >{{btntxt}}</el-button></template>
+                                        <template #append><el-button class="verify-btn"
+                                                                     type="success"
+                                                                     :disabled="codeDisabled"
+                                                                     @click="doSendCode()" >{{codeMsg}}</el-button>
+                                        </template>
                                     </el-input>
-
                                 </div>
                             </el-form-item>
                         </el-form>
                     </div>
-
                 <template #footer>
                     <span class="dialog-footer">
                     <el-button class="register-btn"  @click="doRegister">注册</el-button>
-
                 </span>
-
                 </template>
             </el-dialog>
 
@@ -83,10 +82,9 @@
 </template>
 
 <script>
-    import {getCode, getCaptcha} from 'network/captcha';
-    import {checkPhone, checkUsername, userRegister} from "network/register"
-
     import 'assets/my-element-css/input/my-input.css'
+    import {checkUsername, checkPhone, userRegister, getCode, CheckCaptcha} from "../../../network/account";
+    import {Message, MessageBox} from 'element-ui'
 
     export default {
         name: "Register",
@@ -94,141 +92,153 @@
 
         },
         data() {
+            let validateUsername= (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('用户名不能为空'));
+                } else if (value.length < 4) {
+                    callback(new Error('用户名最少为4位'));
+                }else {
+                    console.log(value);
+                    checkUsername(value).then( res => {
+                        if (res.code == 501) {
+                            callback(new Error('用户名已经被注册'));
+                        }
+                    });
+                    callback();
+                }
+            };
             let validatePass = (rule, value, callback) => {
                 if (value === '') {
                     callback(new Error('请输入密码'));
                 } else {
-                    if (this.register.checkPass !== '') {
-                        this.$refs.register.validateField('checkPass');
+                    const reg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/;
+                    if (reg.test(value)) {
+                        if (this.registerForm.checkPass !== '') {
+                            this.$refs.registerForm.validateField('checkPass');
+                        }
+                    }  else {
+                        return callback(new Error("至少包含8-16个字符，至少1个大写字母，1个小写字母和1个数字"))
                     }
-                    callback();
+
                 }
             };
             let validatePass2 = (rule, value, callback) => {
                 if (value === '') {
                     callback(new Error('请再次输入密码'));
-                } else if (value !== this.register.pass) {
+                } else if (value !== this.registerForm.pass) {
                     callback(new Error('两次输入密码不一致!'));
                 } else {
                     callback();
                 }
             };
+            let validateMobile = (rule, value, callback) => {
+                if (!value) {
+                    return callback(new Error('手机号不能为空'));
+                } else {
+                    const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
+                    console.log(reg.test(value));
+                    if (reg.test(value)) {
+                        checkPhone(value).then( res => {
+                            console.log(res);
+                            if (res.code == 501) {
+                                callback(new Error('手机号已经被绑定'));
+                            } else {
+                                callback();
+                            }
+                        });
+                    } else {
+                        return callback(new Error('请输入正确的手机号'));
+                    }
+                }
+            };
             return {
                 visible: false,
+                codeMsg:'获取验证码',
+                countdown: 6, //倒计时秒数
+                codeDisabled: false,// 是否禁用按钮
+                timer: null,
                 registerForm: {
                     pass: '',
                     checkPass: '',
                     username: '',
-                    tell: '',
+                    mobile: '18834167660',
                     captcha: '',
                 },
-                btntxt:'获取验证码',
-                isSend: false,
-                time: 0,
                 rules: {
+                    username: [
+                        { validator: validateUsername, trigger: 'blur' },
+                        { required: true, message: '用户名不能为空'},
+                    ],
                     pass: [
-                        { validator: validatePass, trigger: 'blur' }
+                        { validator: validatePass, trigger: 'blur' },
+                        { required: true, message: '密码不能为空'},
                     ],
                     checkPass: [
                         { validator: validatePass2, trigger: 'blur' }
                     ],
+                    mobile: [
+                        { validator: validateMobile, trigger: 'blur' }
+                    ]
                 },
             };
         },
         methods: {
-
-
             closeDialog() {
                 this.visible = false;
             },
+
             //手机验证发送验证码
-            doSendCode() {
-                //检查手机号码是否被注册过
-                checkPhone(this.registerForm.tell).then( res => {
-                    console.log(res);
-                    if (res.data.status==500) {
-                        alert(res.data.msg)
-                    } else {
-
-                        checkUsername(this.registerForm.username).then( res => {
-                            if (res.data.status==500) {
-                                alert(res.data.msg)
+            doSendCode(){
+                console.log("获得验证码");
+                if (!this.timer) {
+                    console.log("发送请求==================================");
+                    getCode(this.registerForm.mobile).then( res => {
+                            console.log(res);
+                        }
+                    );
+                    this.timer = setInterval(() => {
+                        if (this.countdown > 0 && this.countdown <= 60) {
+                            this.countdown--;
+                            if (this.countdown !== 0) {
+                                this.codeMsg = "重新发送(" + this.countdown + ")";
+                                //console.log(this.codeMsg);
                             } else {
-                                /*-============================================================*/
-                                if (this.isSend) {
-                                    this.$message({
-                                        message: '请'+this.time+'s后重新发送',
-                                        type: 'fail',
-                                        center:true
-                                    });
-                                } else {
-                                    getCode(this.registerForm.tell).then(res => {
-                                        console.log(res);
-                                    });
-                                    this.$message({
-                                        message: '发送成功',
-                                        type: 'success',
-                                        center:true
-                                    });
-                                    this.time = 6;
-                                    this.isSend=true;
-                                    this.timer();
-                                }
-
-                                /*=================================================================*/
+                                clearInterval(this.timer);
+                                this.codeMsg = "获取验证码";
+                                this.countdown = 60;
+                                this.timer = null;
+                                this.codeDisabled = false;
                             }
-                        });
-
-                    }
-                });
-            },
-            //60S倒计时
-            timer() {
-                if (this.time > 0) {
-                    this.time--;
-                    this.btntxt = this.time + "s后重新获取";
-                    setTimeout(this.timer, 1000);
-                } else {
-                    this.time = 0;
-                    this.isSend=false;
-                    this.btntxt = "重新发送";
+                        }
+                    }, 1000)
                 }
             },
             doRegister() {
+                CheckCaptcha(this.registerForm.mobile, this.registerForm.captcha).then( res => {
+                    if(res.code!=200){
+                        Message( {
+                            message: res.message,
+                            type: 'success',
+                        });
+                    }else if (res.code == 200){
+                        userRegister(this.registerForm.username,
+                            this.registerForm.pass,
+                            this.registerForm.mobile).then(res => {
+                            if (res.code == 200) {
+                                Message({
+                                    message: "注册成功",
+                                    type: 'success'
+                                });
+                                this.visible = false;
+                                this.registerForm.username = '';
+                                this.registerForm.pass = '';
+                                this.registerForm.checkPass = '';
+                                this.registerForm.captcha = '';
+                                this.registerForm.mobile = '';
+                            }
+                        });
+                    }
 
-                getCaptcha(this.registerForm.tell, this.registerForm.captcha).then( res => {
-                    console.log("验证验证码");
-                    console.log(res);
-                    if(res.data.status!=200){
-                        this.$message({
-                            message: res.data.msg,
-                            type: 'success',
-                            center:true
-                        });
-                    }
-                })
-                userRegister(this.registerForm.username, this.registerForm.pass, this.registerForm.tell).then( res => {
-                    console.log("注册");
-                    if(res.data.status==200){
-                        this.$message({
-                            message: '注册成功',
-                            type: 'success',
-                            center:true
-                        });
-                        this.registerVisible = false;
-                        this.registerForm.username = '';
-                        this.registerForm.pass = '';
-                        this.registerForm.checkPass = '';
-                        this.registerForm.captcha = '';
-                        this.registerForm.tell = '';
-                    } else {
-                        this.$message({
-                            message: res.data.msg,
-                            type: 'fail',
-                            center:true
-                        });
-                    }
-                    console.log(res);
                 });
             }
         }

@@ -236,6 +236,7 @@
                 this.diaAddressVisible = true;
             },
             addCart() {
+                this.$store.dispatch("loadCart");
                 let n = this.skus.findIndex( sku => sku.indexes = this.selected);
                 this.selItem.sku = this.skus[n];
                 this.selItem.product = this.goodsItem;

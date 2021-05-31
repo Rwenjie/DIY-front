@@ -15,9 +15,9 @@ import {
 import {insertAddr} from "../../network/express";
 
 const state = {
-    addressList: [
+    addressList: [],
+    defaultAddr: {}
 
-    ]
 };
 //mutations 的目的 修改stats中的状态
 //mutations 的操作尽可能的单一
@@ -68,6 +68,9 @@ const getters = {
 
     addresses(state) {
         return state.addressList;
+    },
+    defaultAddr: (state) => {
+        return state.addressList.find(addr => addr.defaultAddr == 1);
     },
 };
 

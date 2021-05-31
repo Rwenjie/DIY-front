@@ -52,6 +52,7 @@
             },
         },
         mounted() {
+            this.$store.dispatch("loadCategories");
         }
 
     }

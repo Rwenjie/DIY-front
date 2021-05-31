@@ -50,12 +50,12 @@
     export default {
         name: "ChangePwd",
         data() {
-            var validateOldPwd = (rule, value, callback) => {
+            let validateOldPwd = (rule, value, callback) => {
                 if (value==='') {
                     callback(new Error('请输入原密码'));
                 }
-            }
-            var validateNewPwd =  (rule, value, callback) => {
+            };
+            let validateNewPwd =  (rule, value, callback) => {
                 if (value === '') {
                     callback(new Error('请输入密码'));
                 } else {
@@ -65,7 +65,7 @@
                     callback();
                 }
             };
-            var validateRePwd = (rule, value, callback) => {
+            let validateRePwd = (rule, value, callback) => {
                 if (value === '') {
                     callback(new Error('请再次输入密码'));
                 } else if (value !== this.formData.newPwd) {
@@ -74,7 +74,7 @@
                     callback();
                 }
             };
-            var validateMobile = (rule, value, callback) => {
+            let validateMobile = (rule, value, callback) => {
                 if (!value) {
                     return callback(new Error('手机号不能为空'));
                 } else {

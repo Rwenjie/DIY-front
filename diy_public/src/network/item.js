@@ -12,7 +12,7 @@ import Qs from 'qs';
 //商品分类列表
 export function categoryList(){
     return request({
-        url: '/category/listing',
+        url: '/category/ren/listing',
     })
 }
 
@@ -67,7 +67,7 @@ export function getAllGoods() {
  */
 export function getItemByArticle(aid) {
     return request( {
-        url: "/goods/aid",
+        url: "/goods/ren/aid",
         params: {
             aid
         }
@@ -76,7 +76,7 @@ export function getItemByArticle(aid) {
 
 export function getArticle() {
     return request({
-        url: '/article/all',
+        url: '/article/ren/all/',
     })
 }
 
@@ -87,7 +87,7 @@ export function getArticle() {
  */
 export function getItemStarState(gid) {
     return request( {
-        url: '/item/star',
+        url: '/item/ren/state',
         params: gid,
 
     })

@@ -6,7 +6,7 @@
         <div ref="waterfall" class="waterfall-width-js">
             <div ref="container" class="container">
                 <div class="image-col" v-for="(col, index) in articleList" :key="index">
-                    <div class="image-box" v-for="article in col" :key="img">
+                    <div class="image-box" v-for="(article, id) in col" :key="id">
                         <img :src="article.image" alt="" @click="toArticle(article.id)" />
                         <div>
                             <h3>{{article.title}}</h3>
@@ -68,10 +68,10 @@
                     (clientWidth - this.colWidth * this.colNumbers) / 2 + 'px'*/
             },
             //读取图片
-            loadImage() {
-                this.getColNumbers()
+            /*loadImage() {
+                this.getColNumbers();
                 for (let i = 0; i < 12; i++) {
-                    let colIndex = i % this.colNumbers
+                    let colIndex = i % this.colNumbers;
                     //let url = require(`@/assets/images/${i}.jpg`)
                     if (this.imgList[colIndex]) {
                         this.imgList[colIndex].push(url)
@@ -79,10 +79,10 @@
                         this.$set(this.imgList, colIndex, [url])
                     }
                 }
-            },
+            },*/
             resize() {
                 this.imgList = [];
-                this.loadImage()
+                //this.loadImage()
             },
 
             /**
@@ -102,7 +102,6 @@
             loadArticle() {
                 let dataLen = 0;
                 getArticle().then( res => {
-
                     const art = res.data;
                    for (let i=0; i<12; i++) {
                        const data = {
@@ -117,21 +116,15 @@
                        };
                        art.push(data)
                    }
-
-
-                    console.log("art===>");
-                    console.log(art);
                     /*this.article.push(...res.data);*/
                     for (let i = 0; i<art.length; i++) {
                         let colIndex = i % this.colNumbers;
-                        console.log("colIndex"+colIndex);
                         if (this.articleList[colIndex]) {
                             this.articleList[colIndex].push(art[i])
                         } else {
                             this.$set(this.articleList, colIndex, [art[i]])
                         }
                     }
-                    console.log(res);
                 });
               /*  for (let i = 0; i < 12; i++) {
                     let colIndex = i % this.colNumbers;
@@ -149,7 +142,6 @@
             this.loadArticle();
         },
         mounted() {
-            this.loadImage();
             this.resizeRender = throttle(this.resize, 200);
             window.addEventListener('resize', this.resizeRender)
         },

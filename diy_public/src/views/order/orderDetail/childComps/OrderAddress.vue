@@ -15,27 +15,26 @@
                 <div style="float: right; width: 10%">
                     <span>管理收货地址</span>
                 </div>
-                <span>
-
-                </span>
             </div><br>
 
             <v-divider/>
             <ul style="list-style-type: none;">
-                <li class="addr-li" v-for="(addr, index) in addresses" :key="addr.id">
-                    <div style="display: flex"
+                <li class="addr-li" style="height: 40px" v-for="(addr, index) in addresses" :key="addr.id">
+                    <div style="display: flex; height: 40px;"
                          class="addr-item"
                          v-bind:class="selected[index]? 'addr-selected' : addr.defaultAddr==1? 'addr-default' : '' ">
 
                         <span class="addr-span" style="display:block; width: 80px; padding-left: 20px">
-                            <span v-if="addr.defaultAddr==1">寄送至</span>
+                            <span v-if="selected[index]">寄送至</span>
                         </span>
-                        <span style="display:block; width: 40px">
-                           <v-checkbox
-                                   style="width: 100%"
-                                   v-model="selected[index]"
-                                   @click="selectAddr(addr.id, index)"
-                           ></v-checkbox>
+                        <span style="display:block; width: 40px; height: 40px; margin-bottom: 5px">
+                            <div style="padding-top: 8px">
+                                <v-checkbox
+                                        style="width: 100%; height: 20px; margin: auto 0; padding: 0"
+                                        v-model="selected[index]"
+                                        @click="selectAddr(addr.id, index)"
+                                ></v-checkbox>
+                            </div>
                         </span>
                         <span v-for="add in addr.addrList" class="addr-span" style="">
                             {{add.label}}
@@ -59,7 +58,6 @@
                     </div>
                 </li>
             </ul>
-            {{addresses}}
             <v-divider/>
         </div>
         <el-dialog
@@ -90,6 +88,7 @@
         computed: {
           ...mapGetters({
               addresses: "addresses",
+              defaultAddr: "defaultAddr",
           })
         },
 
@@ -103,21 +102,30 @@
                         this.selected[i] = false;
                     }
                 }
+                this.$emit("SelectAddr", this.addresses[index])
             }
 
         },
-        mounted() {
-            console.log(this.defaultAddr);
+        beforeMount() {
             this.$store.dispatch("loadAddress").then( res => {
                 let i = 0;
                 for (let i=0; i<this.addresses.length; i++) {
-                    if (this.addresses[i].defaultAddr === "1") {
+                    if (this.addresses[i].defaultAddr == "1") {
                         this.selected[i] = true;
                     }else {
                         this.selected[i] = false;
                     }
                 }
             });
+        },
+        mounted() {
+            for (let i=0; i<this.addresses.length; i++) {
+                if (this.addresses[i].defaultAddr == "1") {
+                    this.selected[i] = true;
+                }else {
+                    this.selected[i] = false;
+                }
+            }
         },
 
     }
@@ -139,6 +147,7 @@
         background-color: #fff0e8;
     }
     .addr-selected {
+
         font-weight: bolder;
         border: #f40 solid 1px;
         background-color: #fff0e8;
