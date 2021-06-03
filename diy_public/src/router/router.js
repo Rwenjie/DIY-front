@@ -23,6 +23,7 @@ const FollowUsers = () => import('../views/follow/UserList');
 const Goods = () => import('../views/profile/item/Goods');
 const ArticleList = () => import('../views/profile/article/ArticleList');
 const Editor = () => import('../views/profile/article/Editor');
+const Address =() => import('../views/profile/address/Address')
 
 const OrderDetail = () => import('../views/order/orderDetail/OrderDetail');
 
@@ -108,6 +109,11 @@ const routes = [
                 path: 'cart/listing',
                 name:'CartList',
                 component: Cart
+            },
+            {
+                path: 'address',
+                name:'Address',
+                component: Address
             },
         ]
     },

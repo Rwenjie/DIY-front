@@ -36,10 +36,16 @@
                     <span class="tooltip-text">通知</span>
                   </template>
                   <el-button icon="">
-                    <i class="el-icon-bell"></i>
-                    <i class="el-icon-arrow-down el-icon--right"></i>
+                    <i class="el-icon-bell" @click="friendChatVisible"></i>
                   </el-button>
-
+                </el-tooltip>
+                <el-tooltip class="item sec-tex" effect="dark" content="购物车" placement="bottom">
+                  <template #content>
+                    <span class="tooltip-text">购物车</span>
+                  </template>
+                  <el-button @click="clickToPage('/cart')">
+                    <i class="el-icon-shopping-cart-1"></i>
+                  </el-button>
                 </el-tooltip>
                 <el-popover
                         placement="top-start"
@@ -48,12 +54,15 @@
                   <el-button class="sign-in-btn" @click="logout">
                     sign out <v-icon>mdi-logout-variant</v-icon>
                   </el-button>
+                  <div class="block"
+                       style="margin: 8px 15px"
+                       slot="reference"
+                       @click="clickToPage('/profile')">
+                    <el-avatar :size="35" :src="userInfo.avatar"></el-avatar>
+                  </div>
+                <!--  <el-button  >
 
-                  <el-button  slot="reference" @click="clickToPage('/profile')">
-                    <div class="block">
-                      <el-avatar :size="20" :src="profile.profileUrl"></el-avatar>
-                    </div>
-                  </el-button>
+                  </el-button>-->
                 </el-popover>
                <!-- <el-tooltip class="item sec-tex" effect="dark" content="个人中心" placement="bottom">
                   <template #content>
@@ -65,22 +74,15 @@
                     </div>
                   </el-button>
                 </el-tooltip>-->
-                <el-tooltip class="item sec-tex" effect="dark" content="购物车" placement="bottom">
-                  <template #content>
-                    <span class="tooltip-text">购物车</span>
-                  </template>
-                  <el-button @click="clickToPage('/cart')">
-                    <i class="el-icon-shopping-cart-1"></i>
-                  </el-button>
-                </el-tooltip>
+
               </div>
               <!--未登录时的导航-->
               <div class="not-login-navigate navigate" v-show="!loginState">
                 <el-button class="sign-in-btn" @click="logVisible">
-                  Sign in
+                  登录
                 </el-button>
                 <el-button class="sign-in-btn" @click="registerVisible">
-                  Register
+                  注册
                 </el-button>
               </div>
             </el-col>
@@ -88,6 +90,8 @@
         </div>
       </el-col>
     </el-row>
+
+    <friend-chat v-model="ChatVisible"> </friend-chat>
     <login v-on:ForgetPwd="forgetPwd" v-on:LoginSuccess="afterLogin" ref="login"/>
     <register ref="register"/>
     <forget ref="forget"/>
@@ -98,20 +102,23 @@
   import Login from "components/common/account/Login";
   import Register from "components/common/account/Register";
   import Forget from "components/common/account/Forget";
+  import FriendChat from "../../../views/chat/FriendChat";
   import {logout} from "../../../network/account";
+  import {mapGetters, mapState} from 'vuex';
 
   let newVar = {
     name: "MainTabBar",
     components: {
       Login,
       Register,
-      Forget
+      Forget,
+      FriendChat
     },
 
     computed: {
-      profile() {
-        return this.$store.state.profile;
-      },
+      ...mapGetters([
+          'userInfo'
+      ]),
       loginState() {
         return this.$store.state.loginState;
       }
@@ -124,6 +131,7 @@
           img: '',
           describe: '跳转'
         },
+        ChatVisible: false
       }
     },
     methods: {
@@ -134,6 +142,9 @@
       },
       registerVisible() {
         this.$refs.register.visible = true;
+      },
+      friendChatVisible() {
+        this.ChatVisible = true;
       },
       forgetPwd() {
         this.$refs.login.visible = false;
@@ -169,6 +180,9 @@
       this.$store.dispatch("loadCategories");
       //
     },
+    mounted() {
+      //连接WebSocket
+    }
   };
   export default newVar
 </script>

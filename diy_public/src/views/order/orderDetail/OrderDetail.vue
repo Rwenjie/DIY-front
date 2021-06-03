@@ -9,26 +9,14 @@
 <template>
     <div id="order-detail">
         <div class="order-box">
-            <div class="order-step">
-                <el-steps :active=order.orderStatus finish-status="success" simple>
-                    <el-step title="确认订单信息" ></el-step>
-                    <el-step title="付款" ></el-step>
-                    <el-step title="确认收货" ></el-step>
-                    <el-step title="评价" ></el-step>
-                </el-steps>
-            </div>
-
-            <div class="confirm-info" v-if="item.order.orderStatus==0">
-                <order-address v-on:SelectAddr="selectedAddr"></order-address>
-            </div>
-            <div>
+            <order-address v-on:SelectAddr="selectedAddr"></order-address>
+            <div style="margin-top: 20px">
                 <order-box :item="item"></order-box>
             </div>
             <div class="submit-order">
                 <div style="width: 50%; float: right">
                     <div style="border: red solid 1px; text-align: right">
                         <p>实付款：￥{{}}
-
                         </p>
                         <p>寄送至：
                             <span v-for="addr in selAddr.addrList">
@@ -50,7 +38,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -71,51 +58,45 @@
                 defaultAddr: "defaultAddr",
             })
         },
-
-        data(){
-           return{
-               oid: this.$route.params.oid,
-               order: {
-                   orderNo: "", //订单编号
-                   orderStatus: 0,    //0未付款,1已付款,2已发货,3已签收,4新的订单,-1退货申请,-2退货中,-3已退货,-4取消交易'
-                   buyerId: "",     //卖方id
-                   sellerId: "",    //卖方id
-                   afterStatus: "",  //售后状态
-                   productCount: "",    //商品数量
-                   productAmountTotal: "",  //商品总价
-                   orderAmountTotal: "",  //实际付款金额
-                   logisticsFee: "",    //运费金额
-                   addressId: "",   //收货地址编码
-                   payChannel: "",  //支付渠道 0余额 1微信 2支付宝
-                   outTradeNo: "",  //订单支付单号
-                   escrowTradeNo: "",   //第三方支付流水号
-                   payTime: "",     //付款时间
-                   deliveryTime: "",    //发货时间
-                   orderSettlementStatus: "",   //订单结算状态 0未结算 1已结算
-                   orderSettlementTime: "",     //订单结算时间
-               },
-               item: {
-                   order: {
-                       orderStatus: 1,
-                   }
-               },
-               selAddr: {
-                   addrList: [],
-                   nickName: "",
-                   label: ""
-               }
-           }
+        data() {
+            return {
+                oid: this.$route.params.oid,
+                item: {},
+                selAddr: JSON.parse(JSON.stringify(this.defaultAddr)),
+            }
         },
         methods: {
             loadOrderDetail(){
                 console.log("oid");
-                console.log(this.oid);
-                getOrderByOid(this.oid).then( res => {
-                    if (res.code == 200) {
-                        this.item = res.data;
-                    }
+                const oid = this.$route.params.oid;
+                console.log(oid);
+                  getOrderByOid(oid).then( res => {
+                      console.log(res);
+                      this.item = res.data;
+                      //处理sku的ownSpec
+                      this.item.orderDetailList.forEach((item) => {
 
-                })
+                          let ownSpec = item.sku.ownSpec;
+                          let oSpec = [];
+                          if (ownSpec!=null) {
+                              ownSpec = ownSpec.replace("{", "");
+                              ownSpec = ownSpec.replace("}", "");
+                              let str = ownSpec.split(',')
+                              str.forEach( (st) => {
+                                  const a = st.split(':');
+                                  if (a[0]!=null && a[1]!=null) {
+                                      const spec = {
+                                          label: a[0].replace("\"","").replace("\"",""),
+                                          value: a[1].replace("\"","").replace("\"",""),
+                                      };
+                                      oSpec.push(spec)
+                                  }
+                              });
+                              item.ownSpec = oSpec;
+                          }
+                      })
+
+                  })
             },
             selectedAddr(obj) {
                 console.log(obj);
@@ -123,7 +104,6 @@
             },
             aliPay() {
                 let data={
-
                     out_trade_no: "1234567890123",
                     total_amount: "435.43",
                     subject: "345",
@@ -140,14 +120,9 @@
                 });
             }
         },
-        beforeMount() {
-            this.$store.dispatch("loadAddress");
-        },
         mounted() {
-
+            this.$store.dispatch("loadAddress");
             this.loadOrderDetail();
-            console.log(this.defaultAddr);
-            this.selAddr = JSON.parse(JSON.stringify(this.defaultAddr));
         }
     }
 </script>

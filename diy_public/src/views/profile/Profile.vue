@@ -50,7 +50,6 @@
 
                 </div>
             </el-main>
-
         </el-container>
     </div>
 </template>
@@ -109,13 +108,11 @@
                         title: "收藏的文章",
                         path:"/follow/article",
                     },
-                   /* {
-                        action: "mdi-account-star",
-                        title: "关注的用户",
-                        path:"/follow/user",
-                    },*/
-
-
+                    {
+                        action: "mdi-map-marker-plus",
+                        title: "收货地址",
+                        path:"/address",
+                    },
                 ]
             }
         },

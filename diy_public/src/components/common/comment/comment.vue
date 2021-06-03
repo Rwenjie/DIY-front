@@ -10,7 +10,7 @@
         <Row :gutter="20" type="flex" justify="start">
           <Col :xs="4" :sm="3" :md="2" class="bl-text-center">
             <img class="user-image" width="48" height="48" v-if="item.reviewerUser.avatar"
-                 :src="serverUrl + item.reviewerUser.avatar"/>
+                 :src="item.reviewerUser.avatar"/>
             <img class="user-image" width="48" height="48" v-else src="assets/images/avatar.jpg"/>
           </Col>
           <Col :xs="20" :sm="21" :md="22">
@@ -42,8 +42,8 @@
                justify="start">
             <Col :xs="2" :sm="2" :md="1" offset="2">
               <img class="user-image" width="24" height="24" v-if="replyItem.reviewerUser.avatar"
-                   :src="serverUrl + replyItem.reviewerUser.avatar"/>
-              <img class="user-image" width="24" height="24" v-else src="assets/images/avatar.jpg"/>
+                   :src="replyItem.reviewerUser.avatar"/>
+              <img class="user-image" width="24" height="24" v-else src="assets/images/default_avatar.png"/>
             </Col>
             <Col :xs="20" :sm="20" :md="21">
               <span class="nickName" v-text="replyItem.reviewerUser.username"></span> &nbsp;&nbsp;回复 &nbsp;&nbsp;
@@ -111,7 +111,7 @@
       bCommentForm,
       bReplyForm
     },
-    activated() {
+    mounted() {
       this.articleId = this.$route.params.articleId;
       this.getReviewer(this.page);
     },
@@ -141,32 +141,8 @@
             }
 
           });
-
         }
         this.activeId = '';
-      /*  else {
-          const {
-            data: {
-              code,
-              msg,
-              data: {
-                data: {
-                  reply, reviewer
-                }
-              }
-            }
-          } = await that.$axios.get('/comment/selWebSiteCommentReviewer', {
-            params: {page: page, pageSize: this.pageSize}
-          });
-          if (code === 200) {
-            that.reviewer.page = reviewer.page;
-            that.reviewer.pageSize = reviewer.pageSize;
-            that.reviewer.total = reviewer.total;
-            that.reviewerPageFlag = reviewer.rows.length > 0; // 若无评论则隐藏评论分页按钮
-            that.reviewer.rows = reviewer.rows;
-            that.reply.rows = reply; // 子评论
-          }
-        }*/
       },
       // 父评论分页获取下页内容
       getReviewerPage(page) {

@@ -8,14 +8,16 @@
 
 <template>
     <div id="order-box">
-
         <div class="item-box">
-            <div style="padding-top: 20px; width: 100%; text-align: left">
+            <div style="padding-top: 20px;
+                        width: 100%;
+                        text-align: left;
+                        margin-bottom: 15px">
                 <!--这是一个路由跳转-->
-                <h4 style="width: 90%; float: left">确认订单</h4>
-
-            </div><br>
-            <div class="item-head" style="background-color: #eaf8ff; height: 50px">
+                <h4 style="width: 90%; float: left">确认订单信息</h4>
+            </div>
+            <br>
+            <!--<div class="item-head" style="background-color: #eaf8ff; height: 50px">
                 <div style="text-align: left">
                     <span style="width: auto">{{item.order.createdTime}}</span>
                 </div>
@@ -50,6 +52,55 @@
 
                 </div>
                 <div class="item-deal item">交易操作</div>
+            </div>-->
+            <div>
+                <thead>
+                <tr>
+                    <th class="text-center" width="300px">商品</th>
+                    <th class="text-center" width="300px">商品属性</th>
+                    <th class="text-center" width="180px">单价</th>
+                    <th class="text-center" width="170px">数量</th>
+                    <th class="text-center" width="200px">小计</th>
+                </tr>
+                <v-divider/>
+                </thead>
+
+                <div class="item-box">
+                    <div class="item-head" style="background-color: #eaf8ff; height: 50px">
+                        <div style="text-align: left;">
+                            <span style="width: 200px; float: left; margin-top: 15px; margin-left: 10px">订单号：{{item.order.id}}</span>
+                            <span style="width: 400px; float: left; margin-top: 15px">{{item.order.createdTime}}</span>
+                        </div>
+                    </div>
+                    <div class="item-body" style="background-color: #fbfcff" v-for="(detail, id) in item.orderDetailList" :key="id">
+                        <div class="item-info item" style="border-left: white">
+                            <div style="width: 80px; height: 80px; float: left">
+                                <el-image
+                                        style="width: 100%; height:100%"
+                                        :src="detail.goods.images[0]"
+                                        fit="cover"></el-image>
+                            </div>
+                            <div class="info-text" style="">
+                                <p @click="">{{detail.goods.title}}</p>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="item-spec item">
+                            <span v-for="(spec, id) in detail.ownSpec" :key="id">
+                                {{spec.label}}:{{spec.value}}
+                            </span>
+                        </div>
+                        <div class="item-price item">
+                            <span>{{detail.sku.price}}</span>
+                        </div>
+                        <div class="item-count item">
+                            <span>{{detail.count}}</span>
+                        </div>
+                        <div class="item-pay item">
+                            <span>￥{{detail.count* detail.sku.price}}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -92,6 +143,9 @@
         width: 85%;
         margin: 0 auto;
     }
+    .text-center{
+        border-bottom:2px solid #b2d1ff;;
+    }
     .item-body {
         display: flex;
         padding-top: 10px;
@@ -100,7 +154,7 @@
         text-align: center;
     }
     .item-info {
-        width: 460px;
+        width: 300px;
         text-align: center;
         margin-left: 15px;
     }
@@ -109,7 +163,11 @@
         text-align: left;
         width: auto;
     }
-
+    .item-spec {
+        text-align: left;
+        width: 300px;
+        padding-left: 50px;
+    }
     .info-text p {
         font-size: 12px;
         cursor: pointer;
@@ -124,16 +182,16 @@
         text-decoration:underline;
     }
     .item-price {
-        width: 120px;
+        width: 180px;
     }
     .item-count {
-        width: 50px;
+        width: 170px;
     }
     .item-option {
         width: 128px;
     }
     .item-pay {
-        width: 120px;
+        width: 200px;
     }
     .item-state {
         width: 120px;

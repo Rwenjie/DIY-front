@@ -11,34 +11,45 @@
         <div style="text-align: center">
             <el-form ref="addrForm" :model="addrForm" label-width="100px">
                 <el-form-item label="地址信息">
-                        <div style="margin-top: 15px; height: 50px">
+                        <div style="margin-top: 15px; text-align: left">
                             <area-select v-model="toAddr"
                                          :data="$pcaa"
                                          :value="toAddr"
+                                         style="height: 45px"
                                          :level="2"></area-select>
                         </div>
 
                 </el-form-item>
                 <el-form-item label="详细地址">
-                    <el-input v-model="addrForm.address"></el-input>
-                </el-form-item>
-                <el-form-item label="邮政编码">
-                    <el-input v-model="addrForm.number"></el-input>
-                </el-form-item>
-                <el-form-item label="收货人姓名">
-                    <el-input v-model="addrForm.nickName"></el-input>
-                </el-form-item>
-                <el-form-item label="手机号码">
-                    <el-input v-model="addrForm.tel"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <div style="text-align: left">
-                        <el-checkbox v-model="defaultChecked">设置为默认收货地址</el-checkbox>
+                    <div style="width: 344px">
+                        <el-input v-model="addrForm.address">
+                        </el-input>
                     </div>
                 </el-form-item>
-
+                <el-form-item label="邮政编码">
+                    <div style="width: 190px">
+                        <el-input v-model="addrForm.number"></el-input>
+                    </div>
+                </el-form-item>
+                <el-form-item label="收货人姓名">
+                    <div style="width: 190px">
+                    <el-input v-model="addrForm.nickName"></el-input>
+                    </div>
+                </el-form-item>
+                <el-form-item label="手机号码">
+                    <div style="width: 190px">
+                        <el-input v-model="addrForm.tel"></el-input>
+                    </div>
+                </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="onSubmit">立即创建</el-button>
+                    <div style="width: 450px">
+                        <div style="text-align: left; width: 50%; float: left">
+                            <el-checkbox v-model="defaultChecked">设置为默认收货地址</el-checkbox>
+                        </div>
+                        <div style="width: 50%; float: left">
+                            <el-button type="primary" @click="onSubmit">立即创建</el-button>
+                        </div>
+                    </div>
                 </el-form-item>
             </el-form>
         </div>
@@ -82,4 +93,7 @@
 
 <style scoped>
 
+    /deep/ .area-select{
+        height: 45px;
+    }
 </style>

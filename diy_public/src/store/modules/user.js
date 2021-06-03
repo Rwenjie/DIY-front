@@ -10,13 +10,16 @@ import {getAddressByUser} from "network/express";
 import {
     LOAD_ADDRESS,
     ADD_ADDRESS,
-    CHANGE_DEFAULT_ADDR
+    CHANGE_DEFAULT_ADDR,
+    LOAD_USER_INFO
 } from "../mutations-type"
 import {insertAddr} from "../../network/express";
+import {loadUserInfo, updateUserInfo} from "../../network/common";
 
 const state = {
     addressList: [],
-    defaultAddr: {}
+    defaultAddr: {},
+    user: {}
 
 };
 //mutations 的目的 修改stats中的状态
@@ -32,6 +35,9 @@ const mutations = {
     },
     [CHANGE_DEFAULT_ADDR](state, payload) {
         state.addressList[payload].defaultAddr = 0;
+    },
+    [LOAD_USER_INFO](state, payload) {
+        state.user = payload;
     }
 
 };
@@ -48,18 +54,33 @@ const  actions = {
             })
         }))
     },
-
     addAddress(context, payload) {
         insertAddr(payload).then( res => {
             context.commit(LOAD_ADDRESS, res.data);
         })
-
-
     },
-
-    changeAddress(context) {
-
+    loadUserDetail(context) {
+        return new Promise(((resolve, reject) => {
+            loadUserInfo().then( res => {
+                console.log(res);
+                context.commit(LOAD_USER_INFO, res.data);
+                return resolve(res.data)
+            })
+        }))
     },
+    updateUserInfo(context, payload) {
+        return new Promise( (resolve, reject) => {
+            console.log(payload);
+            updateUserInfo(payload).then( res => {
+                if (res.code == 200) {
+                    context.commit(LOAD_USER_INFO, res.data)
+                    resolve("修改成功");
+                } else {
+                    resolve("更新失败");
+                }
+            })
+        })
+    }
 
 
 };
@@ -69,9 +90,15 @@ const getters = {
     addresses(state) {
         return state.addressList;
     },
+    addrLength(state) {
+        return state.addressList.length
+    },
     defaultAddr: (state) => {
         return state.addressList.find(addr => addr.defaultAddr == 1);
     },
+    userInfo: (state) =>{
+        return state.user;
+    }
 };
 
 export default {

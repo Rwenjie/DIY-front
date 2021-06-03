@@ -64,3 +64,8 @@ export function publicGoodArticle() {
         url: '/article/goods/uid'
     })
 }
+export function getArticleByUser() {
+    return request( {
+        url: '/article/uid'
+    })
+}

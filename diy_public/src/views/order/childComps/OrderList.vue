@@ -72,12 +72,10 @@
 
 <script>
 
-    import OrderListItem from "./OrderListItem";
     const cityOptions = ['上海', '北京', '广州', '深圳'];
     export default {
         name: "OrderList",
         components: {
-            OrderListItem
         },
         props: {
             orderList: {

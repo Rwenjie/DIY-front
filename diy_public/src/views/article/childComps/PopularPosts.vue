@@ -8,9 +8,31 @@
 
 <template>
     <div id="popular-posts">
-       <b>Popular Posts</b>
-        <div class="tptn_posts_daily">
-            <ul>
+        <div style="text-align: left; border-bottom: #dcdee2 solid 2px; margin-top: 50px" >
+            <el-avatar
+                    shape="square"
+                    size="large"
+                    src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg">
+            </el-avatar>
+            <span style="font-size: x-large;
+                        display: inline-block;
+                        font-weight: bolder;
+                        line-height: 15px;
+                        margin-left: 15px">RenZY</span>
+        </div>
+        <div style="margin-bottom: 50px">
+            <div style="margin: 15px 0">
+                <el-button round style="width: 100px; height: 35px">关注用户</el-button>
+                <el-button round style="width: 100px; height: 35px">私信</el-button>
+            </div>
+
+        </div>
+
+        <div class="tptn_posts_daily" style="margin-bottom: 50px">
+            <div style="text-align: left; margin-bottom: 20px">
+                <b >Popular Posts</b>
+            </div>
+            <ul style="padding-left: 0">
                 <li v-for="item in PopularPosts">
                     <el-image
                             style="display: block;float: left; width: 20%; margin-right: 20px"
@@ -23,7 +45,7 @@
                                         color: #428bca;
                                         background: transparent;
                                         text-decoration: none;">{{item.title}}</a>
-                        <span style="    font-size: 9px;
+                        <span style="font-size: 9px;
                                     color: #899caf;">{{item.date}}</span>
                     </span>
                 </li>
@@ -54,7 +76,7 @@
 
     .tptn_posts_daily ul li {
         margin-bottom: 10px;
-        padding-bottom: 10px;
+        padding-bottom: 30px;
         border-bottom: 1px solid #ccd4db;
         text-align: left;
     }

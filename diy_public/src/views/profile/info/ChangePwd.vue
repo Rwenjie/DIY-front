@@ -44,8 +44,8 @@
 <script>
 
 
-    import {CheckCaptcha, getCode} from "network/account";
-    import {checkOldPwd} from "../../../network/account";
+    import {checkOldPwd, CheckCaptcha, getCode, changePwd} from "../../../network/account";
+    import { Message } from "element-ui";
 
     export default {
         name: "ChangePwd",
@@ -55,17 +55,27 @@
                     callback(new Error('请输入原密码'));
                 }
             };
-            let validateNewPwd =  (rule, value, callback) => {
+            let validateNewPwd = (rule, value, callback) => {
+                console.log(value);
+                if (this.formData.oldPwd=='') {
+                    this.$refs.pwdForm.validateField('oldPwd');
+                }
                 if (value === '') {
                     callback(new Error('请输入密码'));
                 } else {
-                    if (this.formData.rePwd !== '') {
-                        this.$refs.pwdForm.validateField('rePwd');
+                    const reg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,16}$/;
+                    if (reg.test(value)) {
+                        if (this.formData.rePwd !== '') {
+                            this.$refs.pwdForm.validateField('rePwd');
+                        }
+                    }  else {
+                        return callback(new Error("至少包含8-16个字符，至少1个大写字母，1个小写字母和1个数字"))
                     }
-                    callback();
+
                 }
             };
             let validateRePwd = (rule, value, callback) => {
+                console.log(value);
                 if (value === '') {
                     callback(new Error('请再次输入密码'));
                 } else if (value !== this.formData.newPwd) {
@@ -103,7 +113,7 @@
                     oldPwd: [
                         { validator: validateOldPwd, trigger: 'blur' }
                     ],
-                    newPws: [
+                    newPwd: [
                         { validator: validateNewPwd, trigger: 'blur' }
                     ],
                     rePwd: [
@@ -148,13 +158,33 @@
                 //检查短信验证码
                 CheckCaptcha(this.formData.mobile, this.formData.code).then( res => {
                     console.log(res);
-                })
-                //检查原密码
-                checkOldPwd(this.formData.oldPwd).then( res => {
+                    debugger
+                    if (res.code == 200) {
+                        //检查原密码
+                        checkOldPwd(this.formData.oldPwd).then( res => {
+                            if (res.code == 500) {
+                                Message.error(res.data);
+                            } else {
+                                //确认修改
+                                changePwd(this.formData.newPwd).then( res => {
+                                    console.log(res.data);
+                                    if (res.code == 200) {
+                                        Message({
+                                            message: res.data,
+                                            type: 'success'
+                                        });
+                                    }
+                                })
+                            }
+                        })
+                    } else {
+                        Message.error(res.data)
+                    }
+                });
 
-                })
 
-                //确认修改
+
+
 
 
 

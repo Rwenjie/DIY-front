@@ -61,12 +61,19 @@ export function aliPcPay(data) {
     })
 }
 
-export function aliPay() {
-    return request( {
-        url: '/ali/pay',
-        params: {
-            data
-        }
+export function loadUserInfo() {
+    return request({
+        url: "/user/info",
     })
 }
 
+export function updateUserInfo(user) {
+    return request( {
+        url: "/user/update",
+        data: user,
+        method: "post",
+        headers:{
+            'Content-Type':'application/json;charset=utf-8'
+        }
+    })
+}

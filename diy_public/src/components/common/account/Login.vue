@@ -174,8 +174,7 @@
                     const tokenStr = res.data.tokenHead+res.data.token;
 
                     window.sessionStorage.setItem('tokenStr', tokenStr);
-                    window.location.reload()
-                    this.loginSuccess(res);
+                    this.loginSuccess();
                 });
             },
 
@@ -184,13 +183,12 @@
                 console.log("短信验证码登录");
             },
 
-            loginSuccess(res) {
-                return new Promise((resolve, reject) => {
-                    //获取用户信息
-                    this.$store.dispatch("getUserDetail");
-                    //获取用户购物车信息
-                    this.$store.dispatch("loadCart");
-                });
+            loginSuccess() {
+                this.$store.dispatch("loadUserDetail");
+                //获取用户购物车信息
+                this.$store.dispatch("loadCart");
+                this.$store.dispatch("connect");
+                this.$store.dispatch("changeLogin");
             },
 
             //请求验证码

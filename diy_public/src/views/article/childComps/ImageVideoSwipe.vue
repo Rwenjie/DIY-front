@@ -108,7 +108,6 @@
                 autoplay: true,
                 videoShow: false,
                 videoPlayState: false,
-                images: [],
                 playerOptions: {
                     playbackRates: [0.7, 1.0, 1.5, 2.0], // 播放速度
                     autoplay: false,// 加载完成后是否自动播放
@@ -145,14 +144,14 @@
 
             },
             ImageChange(id) {
-                console.log(id);
                 this.imgActive = id
             },
             imageShow(id) {
                 this.videoShow = false;
                 this.autoplay = false;
-                this.$refs.videoPlayer.player.pause()
-                this.$refs.imagSwipe.setActiveItem(id)
+                this.$refs.videoPlayer.player.pause();
+                setTimeout(this.$refs.imagSwipe.setActiveItem(id), 10000)
+
             },
             videoPlay() {
                 this.videoShow = true;

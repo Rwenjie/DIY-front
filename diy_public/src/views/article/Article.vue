@@ -10,7 +10,7 @@
     <div id="article" style="background: #F5F8FA;">
         <category-nav></category-nav>
         <el-container>
-            <el-aside width="80%" style="height: auto; ">
+            <el-aside  width="80%" style="height: auto; ">
                 <div style="padding: 30px 40px 15px" >
                     <v-divider></v-divider>
                     <div style="max-width: 950px;
@@ -161,7 +161,6 @@
                                             border-radius: 0 0 0 60px">
                     <popular-posts :popular-posts="PopularPosts"> </popular-posts>
                 </el-card>
-
             </el-main>
         </el-container>
     </div>
@@ -346,10 +345,22 @@
         mounted() {
             this.loadArticleInfo();
 
+        },
+        created() {
+            if (!!sessionStorage.getItem("tokenStr")) {
+
+                this.$store.dispatch("loadCart");
+            }
         }
     }
 </script>
 
 <style scoped>
-
+    .content {
+        height: 100%;
+    }
+    .backtop {
+        overflow: scroll;
+        height: 100%;
+    }
 </style>

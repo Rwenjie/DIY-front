@@ -9,7 +9,7 @@
 <template>
     <div id="order-address">
         <div class="confirm-box">
-            <div style="padding-top: 20px; width: 100%">
+            <div style="padding-top: 20px; width: 100%; text-align: left">
                 <!--这是一个路由跳转-->
                 <h4 style="width: 90%; float: left">确认收货地址</h4>
                 <div style="float: right; width: 10%">
@@ -53,7 +53,7 @@
                     </div>
                 </li>
                 <li>
-                    <div style="padding-left: 80px">
+                    <div style="padding-left: 80px; text-align: left; margin: 5px 10px">
                         <el-button size="small" @click="aadDialogVisible=true">使用新地址</el-button>
                     </div>
                 </li>

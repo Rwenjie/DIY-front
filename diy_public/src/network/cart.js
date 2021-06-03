@@ -35,11 +35,11 @@ export function updateCartCount(item) {
     })
 }
 
-export function deleteCart(idList) {
+export function deleteCart(cid) {
     return request( {
-        url: '/cart/count/add',
+        url: '/cart/delete',
         params: {
-            idList
+           cid
         }
     })
 }

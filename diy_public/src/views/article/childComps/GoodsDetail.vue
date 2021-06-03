@@ -147,6 +147,7 @@
     import ImageSelect from "../../../components/common/imageSelect/ImageSelect";
     import {cancelItemStar, getItemStar, getItemStarState} from "../../../network/item";
     import {createOrderNow} from "../../../network/order";
+    import {Message, MessageBox} from 'element-ui'
 
     export default {
         name: "GoodsDetail",
@@ -192,7 +193,6 @@
                         code: ""
                     }
                 },
-                articleId: this.$route.params.articleId,
                 toAddrText: "",
                 toAddr: [],
                 selectedList: [],
@@ -235,16 +235,39 @@
             loadAddress() {
                 this.diaAddressVisible = true;
             },
+            arrEuqalse(arr1, arr2) {
+                if (!arr1 || !arr2) {
+                    return false;
+                }
+                if (arr1.length != arr2.length) {
+                    return false;
+                }
+                for (let i = 0; i < arr2.length; i++) {
+                    if (arr1.indexOf(arr2[i]) == -1) {
+                        return false;
+                    }
+                }
+                for (let i = 0; i < arr1.length; i++) {
+                    if (arr2.indexOf(arr1[i]) == -1) {
+                        return false;
+                    }
+                }
+                return true;
+            },
             addCart() {
-                this.$store.dispatch("loadCart");
-                let n = this.skus.findIndex( sku => sku.indexes = this.selected);
-                this.selItem.sku = this.skus[n];
-                this.selItem.product = this.goodsItem;
-                this.selItem.articleId = this.articleId;
-                this.$store.dispatch("addCart", this.selItem).then( res => {
-                    alert(res)
+                let sku = this.skus.find(sku => this.arrEuqalse(sku.indexes, this.selected));
+                console.log(this.selected);
+                console.log(sku);
+                let sel = JSON.parse(JSON.stringify(this.selItem));
+                sel.sku = JSON.parse(JSON.stringify(sku));
+                sel.product = this.goodsItem;
+                sel.articleId = this.articleId;
+                this.$store.dispatch("addCart", sel).then( res => {
+                    Message( {
+                        message: res,
+                        type: 'success',
+                    });
                 });
-
             },
             purchaseNow() {
                let n = this.skus.findIndex( sku => sku.indexes = this.selected);
@@ -284,27 +307,24 @@
             //sid 是选择了第 i 个规格
             //遍历其他属性对其他属性进行修改
             changeIsAble() {
-                this.goodsItem.spec.forEach( (spec) => {
-                    spec.option.forEach( (op) => {
-                        op.disabled = true;
-                    })
-                });
-                for (let i=0; i<this.selected.length; i++) {
-                    this.goodsItem.spec[i].option[this.selected[i]].disabled = false;
-                    this.change(i)
+                if (this.goodsItem.spec.length > 1) {
+                    this.goodsItem.spec.forEach( (spec) => {
+                        spec.option.forEach( (op) => {
+                            op.disabled = true;
+                        })
+                    });
+                    for (let i=0; i<this.selected.length; i++) {
+                        this.goodsItem.spec[i].option[this.selected[i]].disabled = false;
+                        this.change(i)
+                    }
                 }
+
                 this.changeInfo();
             },
             change(sid) {
-                if (this.goodsItem.spec.length==1) {
-                    this.goodsItem.spec[0].option.forEach( (op) => {
-                        op.disabled = false;
-                    });
-                    return;
-                }
                 this.goodsItem.spec[sid].option[this.selected[sid]].disabled = false;
                 // console.log("现在选定的是第"+this.selected[sid]+"个选项");
-                for (i=0; i<this.skus.length; i++) {
+                for (let i=0; i<this.skus.length; i++) {
                    // console.log("与skus["+i+"]个开始匹配");
                     if (this.selected[sid] == this.skus[i].indexes[sid]) {
                       // console.log("这个skus中有我们需要的值");
@@ -338,7 +358,6 @@
                 for (let i=0; i<this.skus.length; i++) {
                     const sku = this.skus[i];
                     if (this.intEqual(sku.indexes, this.selected)) {
-                        console.log("equal");
                         this.selItem.sku.id = sku.id;
                         this.selItem.sku.unitPrice = sku.price;
                         this.selItem.count = 1;
@@ -369,8 +388,6 @@
                 this.skus = this.goodsItem.skus;
                 console.log(this.skus[0]);
                 this.skus[0].indexes.forEach( (index) => {
-                    console.log("index===>");
-                    console.log(index);
                     this.selected.push(index);
                 });
 

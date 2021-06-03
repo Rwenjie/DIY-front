@@ -11,57 +11,70 @@
         <div class="Cart">
             <div v-if="cartLength>0">
                 <div class="cartTableHeader">
-                    <span>商品信息</span>
-                    <span>单价</span>
-                    <span>数量</span>
-                    <span>小计</span>
-                    <span>交易操作</span>
+                    <span style="width: 30%" >商品信息</span>
+                    <span style="width: 5%">单价</span>
+                    <span style="width: 30%">数量</span>
+                    <span style="width: 5%">小计</span>
+                    <span style="width: 20%">交易操作</span>
                 </div>
                 <ul class="orderList" style="list-style-type: none; padding-left: 0">
                     <li v-for="(item,index) in itemList" :key="index">
 
-                        <div class="orderDetail">
-                            <div style="width: 100px; height: 100px; float: left; padding-left: 70px">
-                                <v-checkbox
-                                        v-model="selected"
-                                        label=""
-                                        :value=item.id
-                                ></v-checkbox>
+                        <div class="orderDetail"  style="display: flex;flex-direction: row">
+                            <div style="width: 30%; display: flex;flex-direction: row">
+                                <div style="width: 15% ;display: flex;flex-direction: row">
+                                <span style="padding: 0 5px;">
+                                    <v-checkbox
+                                            v-model="selected"
+                                            label=""
+                                            :value=item.id
+                                    ></v-checkbox>
+                                </span>
+                                </div>
+                                <img :src="item.product.images[0]" alt="商品图片" />
+                                <div class="goodsName" style="margin-top: 10px">
+                                    <p @click="navTo('/article/'+item.articleId)">{{item.product.title}}</p>
+                                    <span v-for="(spce, id) in item.ownSpec" :key="id">
+                                    {{spce.label}}:{{spce.value}}
+                                </span>
+                                </div>
                             </div>
-                            <img :src="item.product.images[0]" alt="商品图片" />
-                            <div class="goodsName">
-                                <p @click="navTo('/article/'+item.articleId)">{{item.product.title}}</p>
-                                <span>{{item.sku.ownSpec}}</span>
-                            </div>
-                            <span class="unitPrice">{{'￥'+item.sku.price}}</span>
-                            <span class="num">
+                            <div class="unitPrice" style="width: 15% ;">{{'￥'+item.sku.price}}</div>
+                            <div class="num" style="width: 22% ;
+                                                    height:100%;
+                                                    display: flex;
+                                                    align-items:center;
+                                                    justify-content:center;">
                                 <NumberInput
                                     @changeHandle="numberChange(item.id)"
                                     :initNum="item.count"
                                     v-model="item.count"
                                     :min="1"
                                     :max="999"/>
-                            </span>
+                            </div>
                             <!-- <input @change="numberChange(item.id)" type="text" v-model="item.temGoodsNum" min="1" class="numInput" /> -->
                             <span class="amount">{{'￥'+item.amount}}</span>
-                            <button @click="deleteOrder(item.id)">删除</button>
+                            <button @click="deleteCartItem(item.id)">删除</button>
                         </div>
                     </li>
                 </ul>
                 <div class="cartFooter">
                     <span>应付金额：</span>
                     <span class="total">{{'￥'+totalAmount}}</span>
-                    <button @click="settleAccounts">下单</button>
+                    <button @click="placeOrder">下单</button>
                 </div>
             </div>
             <p class="emptyTips" v-else>购物车还是空滴~</p>
-        </div>    </div>
+        </div>
+    </div>
 
 </template>
 
 <script>
     import {mapState, mapGetters } from 'vuex';
     import NumberInput from 'components/NumberInput';
+    import {Message, MessageBox} from 'element-ui'
+    import {createOrderByCart, createOrderNow} from "../../network/order";
 
     export default {
         name: 'Cart',
@@ -82,8 +95,11 @@
             }),
             totalAmount(){
                 let amount = 0;
-                this.itemList.map((item,index)=>{
-                    amount += item.amount;
+                this.selected.forEach( (sel) => {
+                    const val = this.itemList.find( item => item.id === sel);
+                    if (val!=null) {
+                        amount += val.amount
+                    }
                 });
                 return amount;
             },
@@ -99,61 +115,50 @@
             }
         },
         methods:{
-            getOrderByState(state){
-                /*const res = getOrderByState(state,this.clientToken);
-                res
-                    .then((data)=>{
-                        this.orderList=data;
-                        this.orderList.map((item,index)=>{
-                            item.temGoodsNum = item.goodsNum;
-                        })
-                    })
-                    .catch((e)=>{
-                        alert(e);
-                    })*/
-                const orders = [
-
-                ];
-                this.orderList.push (...orders);
-
+            numberChange(cid){
+                console.log(cid);
+                const oldProduct = this.itemList.find(item => item.id == cid);
+                this.$store.dispatch("changeCartCount", oldProduct)
             },
-            numberChange(orderId){
-                this.orderList.map((item,index)=>{
-                    if(orderId===item.id){
-                        item.amount = item.temGoodsNum*item.goods.unitPrice;
-                        console.log(item.temGoodsNum,item.goods.unitPrice)
-                    }
-                })
-            },
-            deleteOrder(orderId){
-                const res = deleteOrder(orderId);
-                res.then(()=>{
-                        alert('删除订单成功！');
-                        this.orderList.map((item,index)=>{
-                            if(item.id===orderId){
-                                this.orderList.splice(index,1);
-                            }
-                        })
-                    })
-                    .catch((e)=>{
-                        alert(e);
-                    })
+            deleteCartItem(cid){
+               this.$store.dispatch("deleteCartItem", cid).then( res => {
+                   Message( {
+                       message: res,
+                       type: 'success',
+                   });
+               })
             },
             navTo(route){
                 this.$router.push(route);
             },
-            settleAccounts(){
+            placeOrder(){
+
+                console.log(this.selected);
+                let selData = [];
+                this.selected.forEach( (sel) => {
+                    if (sel!=""){
+                        selData.push(sel)
+                    }
+                });
+                createOrderByCart(selData).then( res => {
+                    console.log("========");
+                    console.log(res.data);
+                    let newpage = this.$router.resolve({
+                        name: 'messageInfo',
+                        path: "/order/detail/"+res.data,
+                    });
+                    window.open(newpage.href, '_blank');
+                })
 
             }
+
         },
         mounted(){
             //this.getOrderByState(0);
             this.$store.dispatch("loadCart");
             console.log(this.itemList);
         },
-        created() {
 
-        }
     }
 </script>
 

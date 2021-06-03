@@ -18,10 +18,10 @@ export function createOrderNow(data) {
     })
 }
 
-export function createOrderByCart(data) {
+export function createOrderByCart(cartId) {
     return request( {
         url: '/order/create/cart',
-        data,
+        data: cartId,
         method: "post",
         headers:{
             'Content-Type':'application/json;charset=utf-8'

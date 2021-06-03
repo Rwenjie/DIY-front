@@ -1,21 +1,23 @@
 let proxyObj = {}
-proxyObj['/ws'] = {
-  ws: true,
-  target: 'ws://localhost:8088'
-};
+
 proxyObj['/api'] = {
-//websocket
+  //websocket
   ws: false,
-//目标地址
+  //目标地址
   target: 'http://localhost:8088/',
-//发送请求头中host会设置成target
+  //发送请求头中host会设置成target
   changeOrigin: true,
-//不重写请求地址
+  //不重写请求地址
   pathRewrite: {
     '^/api': '/'
   }
-
 };
+
+proxyObj['/ws'] = {
+  ws: true,
+  target: 'ws://localhost:8088/'
+};
+
 
 module.exports = {
   configureWebpack: {
