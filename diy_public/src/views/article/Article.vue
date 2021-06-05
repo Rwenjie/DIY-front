@@ -344,14 +344,7 @@
         },
         mounted() {
             this.loadArticleInfo();
-
         },
-        created() {
-            if (!!sessionStorage.getItem("tokenStr")) {
-
-                this.$store.dispatch("loadCart");
-            }
-        }
     }
 </script>
 

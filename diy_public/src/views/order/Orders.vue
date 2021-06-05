@@ -25,28 +25,20 @@
                     <template v-slot:default>
                         <thead>
                         <tr>
-                            <th class="text-left">商品</th>
-                            <th class="text-left">单价</th>
-                            <th class="text-left">数量</th>
-                            <th class="text-left">商品操作</th>
-                            <th class="text-left">实付款</th>
-                            <th class="text-left">交易状态</th>
-                            <th class="text-left">交易操作</th>
+                            <th class="text-center" width="21%">商品</th>
+                            <th class="text-center" width="20%">商品属性</th>
+                            <th class="text-center" width="10%">单价</th>
+                            <th class="text-center" width="10%">数量</th>
+                            <th class="text-center" width="13%">小计</th>
+                            <th class="text-center" width="13%">交易状态</th>
+                            <th class="text-center" width="13%">交易操作</th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr v-for="item in desserts"
-                            :key="item.name">
-                            <td>{{ item.name }}</td>
-                            <td>{{ item.calories }}</td>
-                        </tr>
-                        </tbody>
                     </template>
                 </v-simple-table>
                 <order-list :orderList="orderList" type="">
 
                 </order-list>
-                {{statusMenus}}
             </div>
         </v-card>
         <div class="order-box">
@@ -110,9 +102,32 @@
                     console.log("order");
                     this.orderList = res.data;
                     console.log(res.data);
+                    this.orderList.forEach( (list) => {
+                        list.orderDetailList.forEach((item) => {
+                            console.log("item");
+                            console.log(item);
+                            let ownSpec = item.sku.ownSpec;
+                            let oSpec = [];
+                            if (ownSpec!=null) {
+                                ownSpec = ownSpec.replace("{", "");
+                                ownSpec = ownSpec.replace("}", "");
+                                let str = ownSpec.split(',')
+                                str.forEach( (st) => {
+                                    const a = st.split(':');
+                                    if (a[0]!=null && a[1]!=null) {
+                                        const spec = {
+                                            label: a[0].replace("\"","").replace("\"",""),
+                                            value: a[1].replace("\"","").replace("\"",""),
+                                        };
+                                        oSpec.push(spec)
+                                    }
+                                });
+                                item.ownSpec = oSpec;
+                            }
+                        });
+                    } )
                 })
             }
-
         },
         mounted() {
             this.loadOrder();

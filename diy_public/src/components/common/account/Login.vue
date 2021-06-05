@@ -188,6 +188,7 @@
                 //获取用户购物车信息
                 this.$store.dispatch("loadCart");
                 this.$store.dispatch("connect");
+                this.$store.dispatch('initChatData');
                 this.$store.dispatch("changeLogin");
             },
 

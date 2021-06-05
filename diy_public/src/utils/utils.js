@@ -95,3 +95,58 @@ export function dateFormat(createdDate) {
   }
 }
 
+/*export function NumFormat (value) {
+  if(!value) return '0.00';
+  /!*原来用的是Number(value).toFixed(0)，这样取整时有问题，例如0.51取整之后为1，感谢Nils指正*!/
+  /!*后来改成了 Number(value)|0,但是输入超过十一位就为负数了，具体见评论 *!/
+  let intPart = Number(value) - Number(value)%1; //获取整数部分（这里是windy93的方法）
+  let intPartFormat = intPart.toString().replace(/(\d)(?=(?:\d{3})+$)/g, '$1,'); //将整数部分逢三一断
+
+  let floatPart = ".00"; //预定义小数部分
+  let value2Array = value.toString().split(".");
+
+  //=2表示数据有小数位
+  if(value2Array.length == 2) {
+    floatPart = value2Array[1].toString(); //拿到小数部分
+
+    if(floatPart.length == 1) { //补0,实际上用不着
+      return intPartFormat + "." + floatPart + '0';
+    } else {
+      return intPartFormat + "." + floatPart;
+    }
+
+  } else {
+    return intPartFormat + floatPart;
+  }
+}*/
+export function NumFormat(number, decimals, dec_point, thousands_sep) {
+  decimals = 2; //这里默认设置保留两位小数，也可以注释这句采用传入的参数
+  thousands_sep = '';
+  /*
+   * 参数说明：
+   * number：要格式化的数字
+   * decimals：保留几位小数
+   * dec_point：小数点符号
+   * thousands_sep：千分位符号
+   * */
+  console.log(number);
+  number = (number + '').replace(/[^0-9+-Ee.]/g, '');
+  var n = !isFinite(+number) ? 0 : +number,
+      prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+      sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+      dec = (typeof dec_point === 'undefined') ? '.' : dec_point;
+  var s = n.toString().split('.');
+  var re = /(-?\d+)(\d{3})/;
+  while (re.test(s[0])) {
+    s[0] = s[0].replace(re, "$1" + sep + "$2");
+  }
+  if ((s[1] || '').length < prec) {
+    s[1] = s[1] || '';
+    s[1] += new Array(prec - s[1].length + 1).join('0');
+  } else {
+    s[1] = s[1].substring(0, prec); //小数点位数超出长度时截取前面的位数
+  }
+  return s.join(dec);
+}
+
+

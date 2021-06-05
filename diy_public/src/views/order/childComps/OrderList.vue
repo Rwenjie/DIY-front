@@ -10,63 +10,65 @@
     <div id="order-list">
         <div class="" style="text-align: left; font-size: 12px">
             <div class="sel-all" style="padding-left: 20px">
-                <v-checkbox
-                        label="全选"
-                        @change="handleCheckAllChange"
-                        v-model="checkAll"
-                        indeterminate>
-                </v-checkbox>
+
             </div>
 
-            <div style="margin: 15px 0;"></div>
-           <div class="item-box" v-for="(item, id) in orderList" :key="id">
+            <div style="margin: 15px 0;">
+
+            </div>
+           <div class="item-box" v-for="(item, id) in orderList" :key="id" style="width: 100%;">
                <div class="item-head" style="background-color: #eaf8ff; height: 50px">
-                   <div style="width: 50px; height: 50px; padding: 10px; float: left">
-                       <v-checkbox
-                               style="margin: 0; padding: 0"
-                               v-model="selected"
-                               value="">
-                       </v-checkbox>
-                   </div>
-                   <div>
-                       <span style="width: auto">{{item.order.createdTime}}</span>
+                   <div style="text-align: left;">
+                       <span style="width: 200px; float: left; margin-top: 15px; margin-left: 10px">订单号：{{item.order.id}}</span>
+                       <span style="width: 400px; float: left; margin-top: 15px">{{item.order.createdTime}}</span>
                    </div>
                </div>
-               <div class="item-body" v-for="(detail, id) in item.orderDetailList" :key="id">
-                   <div class="item-info item" style="border-left: white">
-                       <div style="width: 80px; height: 80px; float: left">
-                           <el-image
-                                   style="width: 100%; height:100%"
-                                   :src="detail.goods.images[0]"
-                                   fit="cover"></el-image>
+               <div class="item-body-left" style="width: 74%; float: left; height: 400px" :key="id" >
+                   <div v-for="(detail, id) in item.orderDetailList" style="width: 100%; display: flex; flex-direction: row">
+                       <div class="item-info item" style="border-left: white">
+                           <div style="width: 80px; height: 80px; float: left">
+                               <el-image
+                                       style="width: 100%; height:100%"
+                                       :src="detail.goods.images[0]"
+                                       fit="cover"></el-image>
+                           </div>
+                           <div class="info-text" style="">
+                               <p @click="">{{detail.goods.title}}</p>
+                           </div>
                        </div>
-                       <div class="info-text" style="">
-                           <p @click="">{{detail.goods.title}}</p>
-                           <span>{{detail.sku.ownSpec}}</span>
+                       <div class="item-spec item">
+                            <span v-for="(spec, id) in detail.ownSpec" :key="id">
+                                {{spec.label}}:{{spec.value}}
+                            </span>
+                       </div>
+                       <div class="item-price item">
+                           <span>￥{{detail.sku.price}}</span>
+                       </div>
+                       <div class="item-count item">
+                           <span>{{detail.count}}</span>
+                       </div>
+                       <div class="item-amount item">
+                           <span> ￥{{detail.count * detail.sku.price}}</span>
                        </div>
                    </div>
-                   <div class="item-price item">
-                       <span>{{detail.sku.price}}</span>
-                   </div>
-                   <div class="item-count item">
-                       <span>2</span>
-                   </div>
-                   <div class="item-option item">
-                       <div>退货/退款</div>
-                       <div>投诉卖家</div>
-                   </div>
-                   <div class="item-pay item">
-                       <span>￥21.04</span>
-                   </div>
-                   <div class="item-state item">
 
+               </div>
+               <div class="item-body-right" style="width: 26%; float: left">
+                   <div class="item-state item">
+                       <div v-if="item.order.orderStatus==1">未付款</div>
+                       <div v-if="item.order.orderStatus==2">已付款</div>
+                       <div v-if="item.order.orderStatus==3">已发货</div>
+                       <div v-if="item.order.orderStatus==4">已签收</div>
                    </div>
                    <div class="item-deal item">交易操作</div>
                </div>
+               <div class="item-body-bottom" style="width: 100%; height: 50px; background-color: #0b2e52">
+
+               </div>
+
            </div>
 
         </div>
-        orderList
     </div>
 </template>
 
@@ -112,15 +114,23 @@
 
 <style scoped>
 
-    .item-body {
+    .item-body-left {
         display: flex;
+        flex-direction: column;
         padding-top: 10px;
         padding-bottom: 10px;
-        border: #daf3ff solid 1px;
+        border-left: #daf3ff solid 1px;
+        border-bottom: #daf3ff solid 1px;
+        border-top: #daf3ff solid 1px;
         text-align: center;
     }
+    .item-body-right {
+        display: flex;
+        flex-direction: row;
+        height: ;
+    }
     .item-info {
-        width: 460px;
+        width: 28%;
         text-align: center;
         margin-left: 15px;
     }
@@ -136,6 +146,12 @@
         margin: 8px 5px 8px 0;
         line-height: 20px;
     }
+    .item-spec {
+        text-align: left;
+        width: 27%;
+        padding-left: 50px;
+    }
+
     .info-text span {
         margin-top: 0;
         color: #aeaeae;
@@ -144,23 +160,24 @@
         text-decoration:underline;
     }
     .item-price {
-        width: 120px;
+        width: 13%;
     }
     .item-count {
-        width: 50px;
+        width: 14%;
     }
-    .item-option {
-        width: 128px;
-    }
-    .item-pay {
-        width: 120px;
+    .item-amount {
+        border-right: #daf3ff solid 1px;
+        width: 14%;
+        float: left;
     }
     .item-state {
-        width: 120px;
+        width: 50%;
+        float: left;
 
     }
     .item-deal {
-        width: 120px;
+        width: 50%;
+        float: left;
     }
     .item {
         border-left: #daf3ff solid 1px;

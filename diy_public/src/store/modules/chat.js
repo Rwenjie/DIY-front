@@ -1,19 +1,23 @@
 import {
-    INIT_FRIEDNS
+    INIT_FRIEDNS,
+    INIT_CURRENT_USER, INIT_IS_DOT
 } from "../mutations-type";
-
+import Vue from 'vue'
+import { Notification } from 'element-ui';
 import store from "../store";
 import SockJS from 'sockjs-client'
 import Stomp from 'stompjs'
-import {getSessionUser} from "../../network/chat";
+import { getChatFriends } from "../../network/chat";
 
 const now = new Date();
 const state = {
     sessions:{},
-    currentUser: {},
+    currentUser: null,
+    chatFriends: [],
     currentSession: null,
     filterKey:'',
-    stomp: null
+    stomp: null,
+    isDot: {},
 };
 //mutations 的目的 修改stats中的状态
 //mutations 的操作尽可能的单一
@@ -21,12 +25,18 @@ const state = {
 const mutations = {
     changeCurrentSession (state, currentSession) {
         state.currentSession = currentSession;
+        Vue.set(state.isDot, state.currentUser.username + '#' + state.currentSession.username, false);
     },
     addMessage (state, msg) {
-        state.sessions[state.currentSession-1].messages.push({
-            content:msg,
+        let mss = state.sessions[state.currentUser.username + "#" + msg.to];
+        if (!mss) {
+            Vue.set(state.sessions, state.currentUser.username + "#" + msg.to, [])
+            //state.sessions[state.currentSession.username + "#" + msg.to] = [];
+        }
+        state.sessions[state.currentUser.username + "#" + msg.to].push({
+            content: msg.content,
             date: new Date(),
-            self:true
+            self: !msg.notSelf
         })
     },
     INIT_DATA (state) {
@@ -38,8 +48,15 @@ const mutations = {
         }*/
     },
     [INIT_FRIEDNS] ( state, data ) {
-        state.friends = data;
+        state.chatFriends = data;
     },
+    [INIT_CURRENT_USER] (state, user) {
+        state.currentUser = user;
+
+    },
+    [INIT_IS_DOT] (state, item) {
+        Vue.set(state.isDot, state.currentUser.username + '#' +item.username, false);
+    }
 
 };
 
@@ -52,9 +69,16 @@ const  actions = {
         let token = window.sessionStorage.getItem('tokenStr');
         context.state.stomp.connect({'Auth-Token': token}, success => {
             context.state.stomp.subscribe('/user/queue/chat', msg => {
-                console.log("msg");
-                console.log(msg);
                 let receiveMsg = JSON.parse(msg.body);
+                //右下角弹框
+                if (!context.state.currentSession || receiveMsg.from != context.state.currentSession.username) {
+                    Notification.info({
+                        title: '['+receiveMsg.fromNickName+']' + "发来一条消息",
+                        message: receiveMsg.content.length > 10 ? receiveMsg.content.substr(0, 10) : receiveMsg.content,
+                        position: 'bottom-left'
+                    });
+                    Vue.set(context.state.isDot, context.state.currentUser.username + '#' +receiveMsg.from, true);
+                }
                 receiveMsg.notSelf = true;
                 receiveMsg.to = receiveMsg.from;
                 context.commit('addMessage', receiveMsg);
@@ -63,10 +87,14 @@ const  actions = {
 
         })
     },
-    initData (context) {
-        getSessionUser().then( res => {
-            if (res.data) {
-                context.commit('INIT_FRIEDNS', res.data)
+    initChatData (context) {
+        getChatFriends().then( res => {
+            if (res.data != null) {
+                context.commit(INIT_FRIEDNS, res.data);
+                res.data.forEach( (item) => {
+                    context.commit(INIT_IS_DOT, item);
+                })
+
             }
         })
     }
@@ -77,8 +105,14 @@ const getters = {
     sessions(state) {
         return state.sessions;
     },
-    currentSessionId(state) {
-        return state.currentSessionId;
+    currentSession(state) {
+        return state.currentSession;
+    },
+    chatFriends(state) {
+        return state.chatFriends;
+    },
+    currentUser(state) {
+        return state.currentUser;
     }
 };
 

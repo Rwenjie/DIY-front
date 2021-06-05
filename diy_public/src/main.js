@@ -15,9 +15,22 @@ import './plugins/area-linkage'
 
 Vue.use(waterfall);
 import './plugins/vant.js'
+import {initLogin} from "./utils/initLogin";
+Vue.config.productionTip = false;
 
-
-Vue.config.productionTip = false
+router.beforeEach( (to, from, next) => {
+  if (window.sessionStorage.getItem("tokenStr") && store.state.user.user!=null) {
+    initLogin();
+    next()
+  } else {
+      if (to.fullPath.indexOf("profile")!==-1) {
+          router.push("/home")
+      }
+      console.log(to);
+      console.log(from);
+      next();
+  }
+});
 
 Vue.use(MyComponent)
 new Vue({
@@ -25,4 +38,4 @@ new Vue({
  store,
  vuetify,
  render: h => h(App)
-}).$mount('#app')
+}).$mount('#app');

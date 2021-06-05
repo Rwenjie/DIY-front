@@ -154,8 +154,6 @@
 
         },
         mounted(){
-            //this.getOrderByState(0);
-            this.$store.dispatch("loadCart");
             console.log(this.itemList);
         },
 

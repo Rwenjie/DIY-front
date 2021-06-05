@@ -82,20 +82,14 @@
     export default {
         name: "Detail",
         computed: {
-            ...mapGetters([
-                'userInfo'
-            ])
+            ...mapGetters({
+                user: "userInfo"
+        })
         },
         data() {
             return {
                 imgFile: [],
-                user: {
-                    username: "",
-                    avatar: "",
-                    birthday: "",
-                    email: "",
-                    sex: 1
-                },
+                user: JSON.parse(JSON.stringify(this.userInfo)),
                 dialogVisible: false,
                 //文件上传请求头
                 myHeaders: { Authorization: window.sessionStorage.getItem('tokenStr') },
@@ -110,12 +104,12 @@
         },
         mounted() {
 
-            if (this.userInfo==null) {
+            /*if (this.userInfo==null) {
                 this.$store.dispatch("loadUserDetail");
             }
             this.$store.dispatch("loadUserDetail").then( res => {
-                this.user = JSON.parse(JSON.stringify(this.userInfo))
-            })
+                this.user = JSON.parse(JSON.stringify(this.userInfo))*/
+
         },
         methods: {
             submitForm() {

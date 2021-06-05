@@ -11,14 +11,13 @@ import {
     LOAD_ADDRESS,
     ADD_ADDRESS,
     CHANGE_DEFAULT_ADDR,
-    LOAD_USER_INFO
+    LOAD_USER_INFO, INIT_CURRENT_USER
 } from "../mutations-type"
 import {insertAddr} from "../../network/express";
 import {loadUserInfo, updateUserInfo} from "../../network/common";
 
 const state = {
     addressList: [],
-    defaultAddr: {},
     user: {}
 
 };
@@ -62,15 +61,14 @@ const  actions = {
     loadUserDetail(context) {
         return new Promise(((resolve, reject) => {
             loadUserInfo().then( res => {
-                console.log(res);
                 context.commit(LOAD_USER_INFO, res.data);
+                context.commit(INIT_CURRENT_USER, res.data);
                 return resolve(res.data)
             })
         }))
     },
     updateUserInfo(context, payload) {
         return new Promise( (resolve, reject) => {
-            console.log(payload);
             updateUserInfo(payload).then( res => {
                 if (res.code == 200) {
                     context.commit(LOAD_USER_INFO, res.data)
@@ -80,6 +78,9 @@ const  actions = {
                 }
             })
         })
+    },
+    test(context, payload) {
+
     }
 
 

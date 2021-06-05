@@ -1,11 +1,15 @@
 <template>
   <div id="list" style="text-align: left">
   	<ul style="padding-left: 0">
-  		<li v-for="item in sessions"
+  		<li v-for="item in chatFriends"
 					:class="{ active: currentSession ? item.username === currentSession.username : false}"
 					v-on:click="changeCurrentSession(item)"><!--   :class="[item.id === currentSessionId ? 'active':'']" -->
-  			<img class="avatar" :src="item.user.img" :alt="item.user.name">
-  			<p class="name">{{item.user.name}}</p>
+  			<img class="avatar" :src="item.avatar" :alt="item.username">
+		<!--	{{isDot.isDot.keys(user.username + '#' + item.username)}}
+  			<el-badge :is-dot="true" class="item">
+
+			</el-badge>-->
+			<p class="name">{{item.username}}</p>
   		</li>
   	</ul>
   </div>
@@ -22,14 +26,19 @@
 			}
 		},
 		computed: {
+			...mapState([
+					'isDot'
+			]),
 			...mapGetters({
 				sessions: "sessions",
-				currentSession: "currentSession"
+				chatFriends: "chatFriends",
+				currentSession: "currentSession",
+				user: "currentUser"
 			})
 		},
 		methods:{
 				changeCurrentSession:function (currentSession) {
-				this.$store.commit('changeCurrentSession', currentSession)
+					this.$store.commit('changeCurrentSession', currentSession)
 			}
 		}
 }
@@ -38,7 +47,7 @@
 <style lang="scss" scoped>
 #list {
 	li {
-		padding: 0px 15px;
+		padding: 15px 15px 5px 15px;
 		border-bottom: 1px solid #292C33;
 		cursor: pointer;
 		&:hover {
@@ -57,6 +66,11 @@
 	.name {
 		display: inline-block;
 		margin-left: 15px;
+		margin-right: 5px;
+		margin-top: 0;
+		margin-bottom: 0;
+		padding-top: 2px;
+
 	}
 }
 </style>

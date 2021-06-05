@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
+  import {mapGetters, mapState} from 'vuex'
 
 export default {
   name: 'UserText',
@@ -14,16 +14,22 @@ export default {
       content:''
     }
   },
+  computed: {
+    ...mapGetters({
+      currentSession: "currentSession"
+    })
+  },
   methods: {
-  	addMessage (e) {
-  		if (e.ctrlKey && e.keyCode ===13 && this.content.length) {
+  	  addMessage (e) {
+  		  if (e.ctrlKey && e.keyCode ===13 && this.content.length) {
 
-  			let msgObj = new Object();
-  			msgObj.to = "Rwen";
-  			msgObj.content = this.content;
-  			this.$store.state.chat.stomp.send('/ws/chat', {}, JSON.stringify(msgObj));
-            this.$store.commit('addMessage', msgObj);
-            this.content='';
+              let msgObj = new Object();
+              msgObj.to = this.currentSession.username;
+              msgObj.content = this.content;
+              console.log(msgObj);
+              this.$store.state.chat.stomp.send('/ws/chat', {}, JSON.stringify(msgObj));
+              this.$store.commit('addMessage', msgObj);
+              this.content='';
   		}
   	}
   }

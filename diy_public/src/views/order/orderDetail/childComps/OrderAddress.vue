@@ -15,7 +15,8 @@
                 <div style="float: right; width: 10%">
                     <span>管理收货地址</span>
                 </div>
-            </div><br>
+            </div>
+            <br>
 
             <v-divider/>
             <ul style="list-style-type: none;">

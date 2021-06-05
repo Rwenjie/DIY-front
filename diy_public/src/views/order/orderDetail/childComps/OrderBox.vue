@@ -68,7 +68,7 @@
                 <div class="item-box">
                     <div class="item-head" style="background-color: #eaf8ff; height: 50px">
                         <div style="text-align: left;">
-                            <span style="width: 200px; float: left; margin-top: 15px; margin-left: 10px">订单号：{{item.order.id}}</span>
+                            <span style="width: 250px; float: left; margin-top: 15px; margin-left: 10px">订单号：{{item.order.id}}</span>
                             <span style="width: 400px; float: left; margin-top: 15px">{{item.order.createdTime}}</span>
                         </div>
                     </div>
@@ -117,23 +117,6 @@
                 }
             }
         },
-        data() {
-            return {
-
-            }
-        },
-        methods: {
-
-        },
-        watch: {
-            item: {
-                deep: true,
-                handler() {
-                    console.log(this.item);
-                }
-            }
-        }
-
     }
 </script>
 

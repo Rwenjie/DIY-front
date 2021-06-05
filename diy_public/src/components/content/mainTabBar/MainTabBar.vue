@@ -35,8 +35,8 @@
                   <template #content>
                     <span class="tooltip-text">通知</span>
                   </template>
-                  <el-button icon="">
-                    <i class="el-icon-bell" @click="friendChatVisible"></i>
+                  <el-button icon="" @click="friendChatVisible">
+                    <i class="el-icon-bell"></i>
                   </el-button>
                 </el-tooltip>
                 <el-tooltip class="item sec-tex" effect="dark" content="购物车" placement="bottom">

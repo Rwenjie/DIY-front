@@ -6,7 +6,7 @@
  * @LastEditTime: Modified time : 2021/6/1
  **/
 import {request} from "./request"
-export function getSessionUser(keywords) {
+export function getChatFriends(keywords) {
     return request({
         url: '/chat/friends',
         params: {

@@ -79,7 +79,10 @@
 
         },
         mounted() {
-            this.$store.dispatch('initData');
+            if (window.sessionStorage.getItem("tokenStr") ){
+                this.$store.dispatch('initChatData');
+            }
+
         }
     }
 </script>

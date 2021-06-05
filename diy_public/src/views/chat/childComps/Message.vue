@@ -1,12 +1,12 @@
 <template>
   <div id="message" style="text-align: left" v-scroll-bottom="sessions">
-  	<ul v-if="currentSession==item.id" v-for="item in sessions" style="padding-left: 0">
-  		<li v-for="entry in item.messages">
+  	<ul v-if="currentSession" style="padding-left: 0">
+  		<li v-for="entry in sessions[user.username + '#' + currentSession.username]">
   			<p class="time">
   				<span>{{entry.date | time}}</span>
   			</p>
   			<div class="main" :class="{self:entry.self}">
-  				<img class="avatar" :src="entry.self ? img : item.user.img" alt="">
+  				<img class="avatar" :src="entry.self ? user.avatar : currentSession.avatar" alt="">
   				<p class="text">{{entry.content}}</p>
   			</div>
   		</li>
@@ -21,14 +21,16 @@
 	  	name: 'Message',
 	  	data () {
 			return {
-				img: 'https://rwenjie-blog.oss-cn-hangzhou.aliyuncs.com/diy-shop/Rwenjie/image/202106011622520478394792.jpg'
+
 			}
 	  	},
 		computed: {
 			...mapGetters({
 				sessions: "sessions",
-				currentSession: "currentSession"
-			})
+				currentSession: "currentSession",
+				user: "currentUser"
+			}),
+
 		},
 		filters:{
 			time (date) {

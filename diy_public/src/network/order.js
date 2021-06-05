@@ -43,3 +43,16 @@ export function getOrderByOid(oid) {
         },
     })
 }
+
+/**
+ * 更新送货地址
+ */
+export function updateDeliveryAddr(aid, oid) {
+    return request( {
+        url: '/order/addr/aid',
+        params: {
+            aid,
+            oid
+        },
+    })
+}

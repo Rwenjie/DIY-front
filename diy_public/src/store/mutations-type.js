@@ -46,3 +46,5 @@ export const CHANGE_DEFAULT_ADDR = "change_default_addr";
  * chat 相关
  */
 export const INIT_FRIEDNS = "init_friends"
+export const INIT_CURRENT_USER = "init_current_user";
+export const INIT_IS_DOT= "init_is_dot";
