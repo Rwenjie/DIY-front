@@ -8,7 +8,7 @@
 
 <template>
     <div id="detail" style="text-align: left">
-        <el-form :model="ruleForm" status-icon ref="ruleForm" label-width="150px" class="demo-ruleForm">
+        <el-form status-icon  label-width="150px" class="demo-ruleForm">
             <el-form-item label="用户名：">
                 <div style="width: 150px">
                     <v-text-field
@@ -92,14 +92,11 @@
                 user: JSON.parse(JSON.stringify(this.userInfo)),
                 dialogVisible: false,
                 //文件上传请求头
-                myHeaders: { Authorization: window.sessionStorage.getItem('tokenStr') },
+                myHeaders: {
+                    Authorization: window.sessionStorage.getItem('tokenStr')
+                },
                 uploadAction: "/api/file/import", // 图片上传的接口地址,引用方式各有不同
                 richImg: [], // 图片列表
-                ruleForm: {
-                    pass: '',
-                    checkPass: '',
-                    age: ''
-                },
             };
         },
         mounted() {

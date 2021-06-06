@@ -77,3 +77,47 @@ export function updateUserInfo(user) {
         }
     })
 }
+
+export function loadExpressCom() {
+    return request({
+        url: "/express/company",
+    })
+}
+
+export function followUser(fuid) {
+    return request({
+        url: "/user/follow",
+        params: {
+            fuid
+        }
+    })
+}
+export function cancelFollow(fuid) {
+    return request({
+        url: "/user/follow/cancel",
+        params: {
+            fuid
+        }
+    })
+}
+export function getFollowState(fuid) {
+    return request({
+        url: "/user/follow/state",
+        params: {
+            fuid
+        }
+    })
+}
+export function addChatFriend(params) {
+    return request({
+        url: "/chat/friend/add",
+        params,
+    })
+}
+
+export function getUser(params) {
+    return request({
+        url: "/user/ren/article",
+        params,
+    })
+}

@@ -6,14 +6,6 @@
  * @LastEditTime: Modified time : 2021/5/20
  **/
 
-/**
- * @FileDescription:
- * @Author: Rwenjie
- * @Date: 2021/5/17
- * @LastEditors: Modified by : Rwenjie
- * @LastEditTime: Modified time : 2021/5/17
- **/
-
 import {
     LOAD_CATEGORIES,
 } from "../mutations-type";

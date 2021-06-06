@@ -34,6 +34,11 @@ export function loadOrder() {
         url: '/order/user/all',
     })
 }
+export function loadSellOrder() {
+    return request( {
+        url: '/order/sell/all',
+    })
+}
 
 export function getOrderByOid(oid) {
     return request( {
@@ -47,12 +52,18 @@ export function getOrderByOid(oid) {
 /**
  * 更新送货地址
  */
-export function updateDeliveryAddr(aid, oid) {
+export function updateDeliveryAddr(params) {
     return request( {
         url: '/order/addr/aid',
-        params: {
-            aid,
-            oid
-        },
+        params,
+    })
+}
+/**
+ * 更新发货
+ */
+export function updateDeliveryGoods(params) {
+    return request( {
+        url: '/order/addr/eid',
+        params,
     })
 }

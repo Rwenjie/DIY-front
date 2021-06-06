@@ -7,7 +7,7 @@
  -->
 
 <template>
-    <div id="order-detail">
+    <div id="order-confirm">
         <div class="order-box">
             <order-address v-on:SelectAddr="selectedAddr"></order-address>
             <div style="margin-top: 20px">
@@ -45,12 +45,12 @@
 <script>
     import OrderAddress from "./childComps/OrderAddress";
     import OrderBox from "./childComps/OrderBox";
-    import {getOrderByOid, updateDeliveryAddr} from "../../../network/order";
+    import {getOrderByOid, updateDeliveryAddr} from "../../network/order";
     import {mapGetters} from "vuex";
-    import {aliPcPay} from "../../../network/common";
-    import {NumFormat} from "../../../utils/utils";
+    import {aliPcPay} from "../../network/common";
+    import {NumFormat} from "../../utils/utils";
     export default {
-        name: "OrderDetail",
+        name: "OrderConfirm",
         components:{
             OrderAddress,
             OrderBox
@@ -74,46 +74,47 @@
                 console.log("oid");
                 const oid = this.$route.params.oid;
                 console.log(oid);
-                    getOrderByOid(oid).then( res => {
-                        console.log(res);
-                        this.item = res.data;
-                        let amount = 0.00;
-                        this.item.orderDetailList.forEach((item) => {
-                            //结算总金额
-                            amount += item.sku.price * item.count;
+                getOrderByOid(oid).then( res => {
+                    console.log(res);
+                    this.item = res.data;
+                    let amount = 0.00;
+                    this.item.orderDetailList.forEach((item) => {
+                        //结算总金额
+                        amount += item.sku.price * item.count;
 
-                           // this.totalAmount = NumFormat(this.totalAmount, 2, '.', ',');
-                            //处理sku的ownSpec
-                            let ownSpec = item.sku.ownSpec;
-                            let oSpec = [];
-                            if (ownSpec!=null) {
-                                ownSpec = ownSpec.replace("{", "");
-                                ownSpec = ownSpec.replace("}", "");
-                                let str = ownSpec.split(',')
-                                str.forEach( (st) => {
-                                    const a = st.split(':');
-                                    if (a[0]!=null && a[1]!=null) {
-                                        const spec = {
-                                            label: a[0].replace("\"","").replace("\"",""),
-                                            value: a[1].replace("\"","").replace("\"",""),
-                                        };
-                                        oSpec.push(spec)
-                                    }
-                                });
-                                item.ownSpec = oSpec;
-                            }
-
-                      });
-                        this.totalAmount = NumFormat(amount, 2, '.', ',');
-                        //默认地址
-                        let addr = this.address.find( addr => addr.id = this.item.order.addressId);
-                        if (addr != null) {
-                            this.selAddr = addr;
-                        } else {
-                            this.selAddr = JSON.parse(JSON.stringify(this.defaultAddr));
+                        // this.totalAmount = NumFormat(this.totalAmount, 2, '.', ',');
+                        //处理sku的ownSpec
+                        let ownSpec = item.sku.ownSpec;
+                        let oSpec = [];
+                        if (ownSpec!=null) {
+                            ownSpec = ownSpec.replace("{", "");
+                            ownSpec = ownSpec.replace("}", "");
+                            let str = ownSpec.split(',')
+                            str.forEach( (st) => {
+                                const a = st.split(':');
+                                if (a[0]!=null && a[1]!=null) {
+                                    const spec = {
+                                        label: a[0].replace("\"","").replace("\"",""),
+                                        value: a[1].replace("\"","").replace("\"",""),
+                                    };
+                                    oSpec.push(spec)
+                                }
+                            });
+                            item.ownSpec = oSpec;
                         }
 
-                  })
+                    });
+                    this.totalAmount = NumFormat(amount, 2, '.', ',');
+                    //默认地址
+                    /*let addr = this.address.find( addr => addr.id = this.item.order.address);
+                    if (addr != null) {
+                        this.selAddr = addr;
+                    } else {
+                        this.selAddr = JSON.parse(JSON.stringify(this.defaultAddr));
+                    }*/
+                    this.selAddr = JSON.parse(JSON.stringify(this.defaultAddr));
+
+                })
             },
             selectedAddr(obj) {
                 console.log(obj);
@@ -126,7 +127,10 @@
                     subject: this.item.orderDetailList[0].goods.title,
                     product_code: "FAST_INSTANT_TRADE_PAY",
                 };
-                updateDeliveryAddr(this.selAddr.id, this.oid).then(res => {
+                updateDeliveryAddr({
+                    aid: this.selAddr.id,
+                    oid: this.oid
+                }).then(res => {
                     if (res.code === 200) {
                         console.log("开始支付");
                         /*let newpage = this.$router.resolve({
@@ -158,12 +162,12 @@
         },
         beforeMount() {
             this.selAddr = JSON.parse(JSON.stringify(this.defaultAddr));
-        /*    setTimeout({}, 2000)
-            this.loadOrderDetail();*/
+            /*    setTimeout({}, 2000)
+                this.loadOrderDetail();*/
         },
         beforeRouteEnter (to, from, next) {
             next(vm => {
-               vm.loadOrderDetail();
+                vm.loadOrderDetail();
             })
         },
         watch: {

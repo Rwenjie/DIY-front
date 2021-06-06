@@ -18,7 +18,7 @@ export function  getArticleById(id) {
 //获取用户的点赞状态
 export function getStarState(aid) {
     return request( {
-        url: '/article/ren/state',
+        url: '/article/state',
         params: {
             aid
         }
@@ -68,4 +68,11 @@ export function getArticleByUser() {
     return request( {
         url: '/article/uid'
     })
+}
+
+export function getStarArticle() {
+    return request( {
+        url: '/article/star'
+    })
+
 }

@@ -14,6 +14,7 @@ import './plugins/vuetify'
 import './plugins/area-linkage'
 
 Vue.use(waterfall);
+Vue.prototype.$bus = new Vue()
 import './plugins/vant.js'
 import {initLogin} from "./utils/initLogin";
 Vue.config.productionTip = false;

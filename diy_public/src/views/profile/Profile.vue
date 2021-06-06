@@ -39,8 +39,8 @@
 
             <el-main style="border: 1px solid red;">
                 <el-breadcrumb separator-class="el-icon-arrow-right" >
-                    <el-breadcrumb-item >{{item1}}</el-breadcrumb-item>
-                    <el-breadcrumb-item>{{item2}}</el-breadcrumb-item>
+                   <!-- <el-breadcrumb-item >{{item1}}</el-breadcrumb-item>
+                    <el-breadcrumb-item>{{item2}}</el-breadcrumb-item>-->
                 </el-breadcrumb>
                 <div style="margin-top: 12px">
                         <!--定义一个路由锚点，Layout的子组件内容将在这里展示-->
@@ -99,6 +99,11 @@
                         path:"/items/order",
                     },
                     {
+                        action: "mdi-text-box-check-outline",
+                        title: "售出订单",
+                        path:"/sell/order",
+                    },
+                    {
                         action: "mdi-file",
                         title: "我的文章",
                         path:"/article/listing",
@@ -133,14 +138,14 @@
         },
         watch: {},
         created() {
-            this.menus.forEach(m => {
+        /*    this.menus.forEach(m => {
                 const p1 = m.path.slice(1);
                 this.menuMap[p1] = {name: m.title};
                 m.items.forEach(i => {
                     this.menuMap[p1][i.path.slice(1)] = i.title;
                 });
                 console.log(this.menuMap);
-            })
+            })*/
         }
     }
 </script>

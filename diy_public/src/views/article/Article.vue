@@ -159,7 +159,7 @@
                 <el-card class="box-card" style=" background: #F5F8FA; height: auto;
                                             box-shadow: 0 2px 4px rgba(0, 0, 0, .12), 0 0 6px rgba(0, 0, 0, .04);
                                             border-radius: 0 0 0 60px">
-                    <popular-posts :popular-posts="PopularPosts"> </popular-posts>
+                    <popular-posts :popular-posts="PopularPosts" :ArticleUserId="article.userId"> </popular-posts>
                 </el-card>
             </el-main>
         </el-container>
@@ -274,22 +274,32 @@
         },
         methods: {
             cancelStar() {
-                cancelStar(this.articleId).then( res => {
-                    this.article.star -= 1;
-                    this.getStarState();
-                });
+                if (window.sessionStorage.getItem("tokenStr")!=null) {
+                    cancelStar(this.articleId).then( res => {
+                        this.article.star -= 1;
+                        this.getStarState();
+                    });
+                }
+
             },
             giveStar() {
-                getStar(this.articleId).then( res => {
-                    this.article.star += 1;
-                    this.getStarState();
-                });
+                if (window.sessionStorage.getItem("tokenStr")!=null) {
+                    getStar(this.articleId).then( res => {
+                        this.article.star += 1;
+                        this.getStarState();
+                    });
+                }
+
             },
             getStarState() {
-                getStarState(this.articleId).then( res => {
-                    console.log(res);
-                    this.starStatus = res.data;
-                })
+                if (window.sessionStorage.getItem("tokenStr")!=null) {
+                    getStarState(this.articleId).then( res => {
+                        console.log("点赞状态"+res);
+                        console.log(res);
+                        this.starStatus = res.data;
+                    })
+                }
+
             },
             loadTagList(){
                 if (this.article.tags!="") {

@@ -9,9 +9,10 @@ import {request} from "./request";
 
 
 //查看物流信息
-export function expressDetail() {
+export function expressDetail(params) {
     return request({
         url: '/express/detail',
+        params,
     })
 }
 

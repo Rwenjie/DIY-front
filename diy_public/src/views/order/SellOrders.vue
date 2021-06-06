@@ -1,13 +1,13 @@
 <!--
  * @FileDescription: TODO
  * @Author: Rwenjie
- * @Date: 2021/5/3
+ * @Date: 2021/6/6
  * @LastEditors: Modified by : Rwenjie
- * @LastEditTime: Modified time : 2021/5/3
+ * @LastEditTime: Modified time : 2021/6/6
  -->
 
 <template>
-    <div id="order">
+    <div id="sell-order">
         <v-card>
             <v-toolbar class="elevation-0">
                 <el-breadcrumb separator="|">
@@ -37,21 +37,21 @@
                         </thead>
                     </template>
                 </v-simple-table>
-                <order-list :orderList="orderList" type="">
+                <sell-order-list :orderList="orderList" type="">
 
-                </order-list>
+                </sell-order-list>
             </div>
         </v-card>
     </div>
 </template>
 
 <script>
-    import OrderList from "./childComps/OrderList";
-    import {loadOrder} from "../../network/order";
+    import SellOrderList from "./childComps/SellOrderList";
+    import {loadSellOrder} from "../../network/order";
     export default {
-        name: "Orders",
+        name: "SellOrders",
         components: {
-            OrderList
+            SellOrderList
         },
         data() {
             return {
@@ -103,15 +103,11 @@
                 }
             },
             loadOrder() {
-                loadOrder().then( res => {
-                    console.log("order");
+                loadSellOrder().then( res => {
                     this.allOrderList = res.data;
                     this.orderList = this.allOrderList;
-                    console.log(res.data);
                     this.orderList.forEach( (list) => {
                         list.orderDetailList.forEach((item) => {
-                            console.log("item");
-                            console.log(item);
                             let ownSpec = item.sku.ownSpec;
                             let oSpec = [];
                             if (ownSpec!=null) {

@@ -145,7 +145,7 @@
                     console.log(res.data);
                     let newpage = this.$router.resolve({
                         name: 'messageInfo',
-                        path: "/order/detail/"+res.data,
+                        path: "/order/confirm/"+res.data,
                     });
                     window.open(newpage.href, '_blank');
                 })

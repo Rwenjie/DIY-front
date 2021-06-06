@@ -11,6 +11,7 @@ import Router from 'vue-router'
 const Home = () => import('../views/home/Home');
 const Profile =() => import('../views/profile/Profile');
 const Orders = () => import('../views/order/Orders');
+const SellOrder =() => import('../views/order/SellOrders')
 const Cart = () => import('../views/cart/Cart');
 const Article = () => import('../views/article/Article')
 
@@ -25,8 +26,7 @@ const ArticleList = () => import('../views/profile/article/ArticleList');
 const Editor = () => import('../views/profile/article/Editor');
 const Address =() => import('../views/profile/address/Address')
 
-const OrderDetail = () => import('../views/order/orderDetail/OrderDetail');
-
+const OrderConfirm = () => import('../views/orderConfirm/OrderConfirm');
 
 Vue.use(Router);
 
@@ -81,9 +81,9 @@ const routes = [
                 component: Orders
             },
             {
-                path: 'item/order',
-                name:'itemOrder',
-                component: Orders
+                path: 'sell/order',
+                name:'SellOrder',
+                component: SellOrder
             },
             {
                 path: 'article/listing',
@@ -117,10 +117,15 @@ const routes = [
             },
         ]
     },
-    {
+/*    {
         path: '/order/detail/:oid',
         name: 'OrderDetail',
         component: OrderDetail,
+    },*/
+    {
+        path: '/order/confirm/:oid',
+        name: 'OrderConfirm',
+        component: OrderConfirm,
     }
 ];
 

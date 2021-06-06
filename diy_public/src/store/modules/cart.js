@@ -92,9 +92,7 @@ const  actions = {
     },
     loadCart(context) {
         return new Promise(((resolve, reject) => {
-            console.log("loadCart");
             getAllCart().then( res => {
-                console.log(res);
                 context.commit(LOAD_CART, res.data);
             })
         }))

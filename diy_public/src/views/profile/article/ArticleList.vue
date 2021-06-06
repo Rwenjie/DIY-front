@@ -23,18 +23,9 @@
                 </v-btn-toggle>
             </v-flex>
             <v-flex xs3>
-                <!--<v-text-field
-                        label="搜索"
-                        single-line
-                        hide-details
-                        append-icon="mdi-map-marker"
-                        v-model="filter.search"
-                >
-                </v-text-field>-->
             </v-flex>
         </v-toolbar>
         <article-item v-for="(article, id) in activeArticle" :article="article" :key="id"></article-item>
-
     </div>
 </template>
 

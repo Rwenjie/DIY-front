@@ -181,7 +181,9 @@
       //
     },
     mounted() {
-      //连接WebSocket
+      this.$bus.$on('chatVisible', ()=> {
+        this.ChatVisible = true;
+      })
     }
   };
   export default newVar
