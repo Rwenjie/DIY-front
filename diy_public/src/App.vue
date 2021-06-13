@@ -11,10 +11,9 @@
           <el-header style="height: 52px;">
             <main-tab-bar style=""/>
           </el-header>
-          <el-main style="padding: 20px  0 0 0">
+          <el-main style="padding: 20px  0 0 0;">
               <router-view/>
           </el-main>
-          <el-footer>Footer</el-footer>
         </el-container>
       </el-col>
       <!--     <el-col :span="1" > </el-col>-->

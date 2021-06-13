@@ -163,7 +163,7 @@
                     pass: '',
                     checkPass: '',
                     username: '',
-                    mobile: '18834167660',
+                    mobile: '',
                     captcha: '',
                 },
                 rules: {

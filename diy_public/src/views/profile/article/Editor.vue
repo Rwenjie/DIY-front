@@ -104,8 +104,8 @@
             </span>
         </el-dialog>
 
-        <r-editor v-model="article.text">
-        </r-editor>
+        <s-editor v-model="article.text">
+        </s-editor>
       <!--  <v-editor>
 
         </v-editor>-->
@@ -176,8 +176,20 @@
                 });
                 this.article.categoryId = this.categoryId[0];
                 submitArticle(this.article).then( res => {
-                   /*this.article = {};*/
-                });
+                    const article = {title: "",
+                            text: "",
+                            categoryId: "",
+                            subCategory: "",
+                            image: "",
+                            tags: "",
+                            brief: "",
+                    };
+                    this.article = article;
+                    this.categoryId = [];
+                    this.subCategory = [];
+                    this.tags = [];
+                    this.reload();
+            });
                 this.dialogVisible = false;
             },
             loadCategory() {

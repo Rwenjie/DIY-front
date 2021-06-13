@@ -58,10 +58,12 @@
                         </div>
                     </li>
                 </ul>
-                <div class="cartFooter">
-                    <span>应付金额：</span>
-                    <span class="total">{{'￥'+totalAmount}}</span>
-                    <button @click="placeOrder">下单</button>
+                <div class="cartFooter" >
+                    <div style="text-align: right; margin-right: 150px">
+                        <span>应付金额：</span>
+                        <span class="total">{{'￥'+totalAmount}}</span>
+                    </div>
+                    <button @click="placeOrder" >下单</button>
                 </div>
             </div>
             <p class="emptyTips" v-else>购物车还是空滴~</p>
@@ -140,6 +142,10 @@
                         selData.push(sel)
                     }
                 });
+                if (selData.length==0){
+                    Message.error("请选择商品");
+                    return;
+                }
                 createOrderByCart(selData).then( res => {
                     console.log("========");
                     console.log(res.data);
@@ -151,7 +157,6 @@
                 })
 
             }
-
         },
         mounted(){
             console.log(this.itemList);
@@ -287,7 +292,7 @@
                 top: 0;
                 width: 100px;
                 height: 100%;
-                background-color: @thirdColor;
+                background-color: @falseColor;
                 border: none;
                 color:white;
                 font-size: 20px;

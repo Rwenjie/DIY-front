@@ -11,7 +11,7 @@
         <v-card style="width: 100%; padding: 10px 20px" >
             <div class="card" >
                 <div class="card-header">
-                    <h4 class="card-title"><a href="#">{{title}}</a></h4>
+                    <h4 class="card-title"><a href="#">{{article.title}}</a></h4>
                     <div></div>
                 </div>
 
@@ -19,13 +19,13 @@
 
                     <div style="display: flex;flex-direction: row">
                         <div style="width: 75%;">
-                            <el-divider content-position="left">{{article.createTime}}</el-divider>
+                            <el-divider content-position="left" style="width: 90%">{{article.createTime}}</el-divider>
                             <h6 class="card-subtitle mb-2 text-muted">
-                                <span v-if=isMySelf class="artic-tie">原创</span>
-                                <span v-else class="arctic-tie">转载</span>
-                                <span class="arctic-tie">{{time}}</span>
+                       <!--         <span v-if=isMySelf class="artic-tie">原创</span>
+                                <span v-else class="arctic-tie">转载</span>-->
+                        <!--        <span class="arctic-tie">{{time}}</span>
                                 <span class="arctic-tie">{{author}}</span>
-                                <span class="arctic-tie">{{category}}</span>
+                                <span class="arctic-tie">{{category}}</span>-->
                             </h6>
                             <p class="card-text">{{article.brief}}</p>
                         </div>

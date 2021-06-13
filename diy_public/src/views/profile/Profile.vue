@@ -8,13 +8,15 @@
 
 <template>
     <div id="profile">
-        <el-container >
-            <el-aside style="border: 1px solid red;" width="250px">
+        <el-container style="height: 717px">
+            <el-aside style="border: 1px solid #e0e0e0; height: 100%" width="250px">
                 <v-card
                         class="mx-auto"
+                        style="height: 100%"
                         width="300">
                     <v-list>
                         <v-list-item
+                                style="border-bottom: 1px solid #e0e0e0"
                                 to="/home">
                             <v-list-item-icon>
                                 <v-icon>mdi-home</v-icon>
@@ -25,6 +27,7 @@
 
                         <!--一级-->
                         <v-list-item
+                                style="border-bottom: 1px solid #e0e0e0"
                                 v-for="(item, id) in items"
                                 :key="id"
                                 :to="basePath + item.path">
@@ -37,11 +40,7 @@
                 </v-card>
             </el-aside>
 
-            <el-main style="border: 1px solid red;">
-                <el-breadcrumb separator-class="el-icon-arrow-right" >
-                   <!-- <el-breadcrumb-item >{{item1}}</el-breadcrumb-item>
-                    <el-breadcrumb-item>{{item2}}</el-breadcrumb-item>-->
-                </el-breadcrumb>
+            <el-main style="border: 1px solid #e0e0e0">
                 <div style="margin-top: 12px">
                         <!--定义一个路由锚点，Layout的子组件内容将在这里展示-->
                     <keep-alive>
@@ -125,28 +124,8 @@
             items() {
                 return this.menus;
             },
-            /*item1() {
-                const arr = this.$route.path.split("/");
-                console.log(arr);
-                console.log(this.menuMap[arr[2]]);
-                return this.menuMap[arr[2]].name;
-            },
-            item2() {
-                const arr = this.$route.path.split("/");
-                return this.menuMap[arr[2]][arr[3]];
-            }*/
         },
         watch: {},
-        created() {
-        /*    this.menus.forEach(m => {
-                const p1 = m.path.slice(1);
-                this.menuMap[p1] = {name: m.title};
-                m.items.forEach(i => {
-                    this.menuMap[p1][i.path.slice(1)] = i.title;
-                });
-                console.log(this.menuMap);
-            })*/
-        }
     }
 </script>
 

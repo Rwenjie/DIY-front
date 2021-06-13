@@ -1,9 +1,9 @@
 <template>
     <div id="home">
         <category-nav ></category-nav>
-        <el-button @click="show = !show">
+   <!--     <el-button @click="show = !show">
             换
-        </el-button>
+        </el-button>-->
 
         <transition name="fade">
 

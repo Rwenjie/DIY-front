@@ -50,9 +50,6 @@
               </v-col>
             </v-row>
             <v-text-field label="商品标题" v-model="goods.title" :maxlength="25" required :rules="[v => !!v || '商品标题不能为空']" />
-            <v-text-field label="商品卖点" v-model="goods.subTitle" :maxlength="25"/>
-            <v-text-field label="包装清单" v-model="goods.packingList" :maxlength="1000" multi-line :rows="3"/>
-            <v-text-field label="售后服务" v-model="goods.afterService" :maxlength="1000" multi-line :rows="3"/>
           </v-form>
         </v-flex>
       </v-stepper-content>
@@ -86,7 +83,7 @@
           <el-upload
                   class="upload-demo"
                   action="/api/file/import"
-                  :on-remove="handleRemove"
+                  :on-remove="videoHandleRemove"
                   :before-remove="beforeRemove"
                   multiple
                   :headers="myHeaders"
@@ -99,7 +96,7 @@
           </el-upload>
           <v-divider></v-divider>
           <h4><p>文字描述</p></h4>
-          <v-editor v-model="goods.description" upload-url="/upload/image"/>
+         <!-- <v-editor v-model="goods.description" upload-url="/upload/image"/>-->
         </div>
 
       </v-stepper-content>
@@ -251,11 +248,8 @@ export default {
 
       const goods = {
         title: this.goods.title, // 标题
-        subTitle: this.goods.subTitle, //商品卖点
         article: this.goods.article,
-        packingList: this.goods.packingList,//包装清单
         description: this.goods.description,//商品描述
-        afterService: this.isEdit ? this.goods.afterService : this.goods.afterService.split(','),//售后服务
         payMethod: JSON.stringify(this.goods.payMethod),
         images: this.goods.images,
         skus: this.goods.skus,
@@ -296,6 +290,9 @@ export default {
     },
     videoUploadSuccess(res, file) {
       this.goods.video = res.data;
+    },
+    videoHandleRemove() {
+
     },
 
     addSkus() {
